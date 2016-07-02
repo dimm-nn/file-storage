@@ -3,25 +3,15 @@
 namespace api\controllers;
 
 use api\components\File;
+use api\components\Controller;
 use Yii;
-use yii\rest\Controller;
 use yii\web\ForbiddenHttpException;
 
 /**
  * @package api\controllers
  */
-class UploadController extends Controller
+class FileController extends Controller
 {
-    public function behaviors()
-    {
-        $behaviors =  parent::behaviors();
-
-        unset($behaviors['rateLimiter']);
-        unset($behaviors['authenticator']);
-
-        return $behaviors;
-    }
-
     /**
      * Upload files from $_FILES and $_POST['url] arrays
      * Return json answer with files names
@@ -31,7 +21,7 @@ class UploadController extends Controller
      * @throws ForbiddenHttpException
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionIndex($secret, $project)
+    public function actionUpload($secret, $project)
     {
         if (!in_array($secret, Yii::$app->params['secret']))
         {

@@ -13,10 +13,6 @@ return [
     'bootstrap' => ['log'],
     'controllerNamespace' => 'api\controllers',
     'components' => [
-        'user' => [
-            'enableSession' => false,
-            'identity' => \api\components\Identity::class,
-        ],
         'urlManager' => [
             'ruleConfig' => [
                 'class' => \yii\rest\UrlRule::class,
@@ -26,9 +22,10 @@ return [
             'showScriptName' => false,
             'rules' => [
                 [
-                    'controller' => 'upload',
+                    'controller' => 'file',
+                    'patterns' => [],
                     'extraPatterns' => [
-                        'POST upload/<secret:\w+>/<project:\w+>' => 'index',
+                        'POST upload/<secret:\w+>/<project:\w+>' => 'upload',
                     ],
                 ],
             ],
