@@ -1,0 +1,15 @@
+{
+    "name": "serieznyi/image-server",
+    "minimum-stability": "stable",
+    "require": {
+        "php": "~7.0.6",
+        "consultnn/yii2-stream-target": "~1.0.0",
+        "yiisoft/yii2": "~2.0.8"
+    },
+    "config": {
+        "process-timeout": 1800,
+        "github-oauth": {
+            "github.com": "421c0e8472bdaccd5aed9d8e17de65b2efc054a6"
+        }
+    }
+}
