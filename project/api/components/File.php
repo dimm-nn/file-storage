@@ -8,9 +8,6 @@ use yii\base\Object;
 
 class File extends Object
 {
-    const SHA_OFFSET = 0;
-    const NAME_LENGTH = 13; //after change this value you need fix nginx config
-
     public $projectName;
 
     public function save()
@@ -188,11 +185,14 @@ class File extends Object
 
     public function makeNewFileName($sha, $extension)
     {
-        $shaBase36 = FileHelper::internalBaseConvert($sha, 16, 36);
-        $webName   = substr($shaBase36, self::SHA_OFFSET, self::NAME_LENGTH);
+        static $nameLength = 13;
+        static $shaOffset = 0;
 
-        if (strlen($webName) < self::NAME_LENGTH) {
-            $webName = str_pad($webName, self::NAME_LENGTH, '0', STR_PAD_LEFT);
+        $shaBase36 = FileHelper::internalBaseConvert($sha, 16, 36);
+        $webName   = substr($shaBase36, $shaOffset, $nameLength);
+
+        if (strlen($webName) < $nameLength) {
+            $webName = str_pad($webName, $nameLength, '0', STR_PAD_LEFT);
         }
 
         $fileDirPath = Yii::getAlias('@storage') . '/' . $this->projectName;
