@@ -1,6 +1,6 @@
 <?php
 
-namespace api\helpers;
+namespace file\helpers;
 
 use finfo;
 

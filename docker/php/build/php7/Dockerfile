@@ -23,6 +23,14 @@ RUN ln -sf /dev/stderr /var/log/php-fpm/error.log
 
 RUN rm -r /var/lib/apt/lists/*
 
+RUN apt-get update \
+    && apt-get -y install \
+            libmagickwand-dev \
+        --no-install-recommends \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
+    && rm -r /var/lib/apt/lists/*
+
 WORKDIR /www
 
 CMD ["php-fpm"]

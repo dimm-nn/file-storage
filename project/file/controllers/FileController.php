@@ -1,14 +1,14 @@
 <?php
 
-namespace api\controllers;
+namespace file\controllers;
 
-use api\components\File;
-use api\components\Controller;
+use file\components\Controller;
+use file\components\FileSaver;
 use Yii;
 use yii\web\ForbiddenHttpException;
 
 /**
- * @package api\controllers
+ * @package file\controllers
  */
 class FileController extends Controller
 {
@@ -21,15 +21,14 @@ class FileController extends Controller
      * @throws ForbiddenHttpException
      * @throws \yii\base\InvalidConfigException
      */
-    public function actionUpload($secret, $project)
+    public function actionUpload($project, $secret)
     {
-        if (!in_array($secret, Yii::$app->params['secret']))
-        {
+        if (!in_array($secret, Yii::$app->params['secret'])) {
             throw new ForbiddenHttpException();
         }
 
         $file = Yii::createObject([
-            'class' => File::class,
+            'class' => FileSaver::class,
             'projectName' => $project,
         ]);
 

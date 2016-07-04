@@ -1,12 +1,12 @@
 <?php
 
-namespace api\components;
+namespace file\components;
 
-use api\helpers\FileHelper;
+use file\helpers\FileHelper;
 use Yii;
 use yii\base\Object;
 
-class File extends Object
+class FileSaver extends Object
 {
     public $projectName;
 
