@@ -32,25 +32,25 @@ return [
     'Development' => [
         'path' => 'dev',
         'setWritable' => [
-            'file/runtime',
+            'runtime',
         ],
         'setExecutable' => [
             'yii',
         ],
         'setCookieValidationKey' => [
-            'file/config/main-local.php',
+            'config/main-local.php',
         ],
     ],
     'Production' => [
         'path' => 'prod',
         'setWritable' => [
-            'file/runtime',
+            'runtime',
         ],
         'setExecutable' => [
             'yii',
         ],
         'setCookieValidationKey' => [
-            'file/config/main-local.php',
+            'config/main-local.php',
         ],
     ],
 ];
