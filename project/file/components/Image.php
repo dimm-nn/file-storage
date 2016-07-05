@@ -2,6 +2,7 @@
 
 namespace file\components;
 
+use Imagine\Gmagick\Imagine;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -248,28 +249,30 @@ class Image extends Component
      */
     public function generateImage($physicalPath, $params)
     {
-        $imagick = new \Imagick($physicalPath);
+        $imagine = new Imagine;
+
+        $options = [];
+
+        $image = $imagine->open($physicalPath);
 
         if (!empty($params['w']) || !empty($params['h'])) {
-            $imagick->thumbnailImage(
+            $box = new \Imagine\Image\Box(
                 (int) ($params['w'] ?? 0),
                 (int) ($params['h'] ?? 0)
             );
+
+            $image->thumbnail($box);
         }
 
         if (!isset($params['q']) && (isset($params['w']) || isset($params['h']))) {
-            $params['q'] = 80;
+            $options['quality'] = 80;
         }
 
         Yii::$app->response->format = Response::FORMAT_RAW;
 
-        $encoding = Yii::$app->charset;
-
         $info   = getimagesize($physicalPath);
         $mime   = $info['mime'];
 
-        header("Content-Type: {$mime}; charset={$encoding}");
-
-        echo $imagick->getImageBlob();
+        $image->show($mime, $options);
     }
 }
