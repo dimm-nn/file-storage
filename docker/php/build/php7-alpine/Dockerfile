@@ -17,4 +17,7 @@ RUN curl -sS https://getcomposer.org/installer \
 
 RUN composer global require --prefer-dist "fxp/composer-asset-plugin"
 
+RUN docker-php-ext-configure mbstring
+RUN docker-php-ext-install mbstring zip intl bcmath mcrypt gd
+
 CMD ["php-fpm"]
