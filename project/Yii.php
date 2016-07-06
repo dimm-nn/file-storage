@@ -18,7 +18,7 @@ Yii::$container = new yii\di\Container;
 
 /**
  * @inheritdoc
- * @property \file\components\Image $image
+ * @property \components\Image $image
  */
 abstract class BaseApplication extends yii\base\Application
 {

@@ -1,16 +1,16 @@
 <?php
 
-namespace file\controllers;
+namespace app\controllers;
 
-use file\components\Controller;
-use file\helpers\FileHelper;
-use file\helpers\Helper;
+use app\components\Controller;
+use app\helpers\FileHelper;
+use app\helpers\Helper;
 use Yii;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 
 /**
- * @package file\controllers
+ * @package controllers
  */
 class ImageController extends Controller
 {

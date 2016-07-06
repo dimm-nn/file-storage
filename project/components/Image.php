@@ -1,6 +1,6 @@
 <?php
 
-namespace file\components;
+namespace app\components;
 
 use Imagine\Gmagick\Imagine;
 use Yii;

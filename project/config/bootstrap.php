@@ -1,4 +1,4 @@
 <?php
 
-Yii::setAlias('@application', dirname(dirname(__DIR__)) . '/file');
-Yii::setAlias('@storage', dirname(dirname(__DIR__)) . '/storage');
+Yii::setAlias('@app', dirname(__DIR__));
+Yii::setAlias('@storage', dirname(__DIR__) . '/storage');

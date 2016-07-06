@@ -1,8 +1,8 @@
 <?php
 
-namespace file\helpers;
+namespace app\helpers;
 
-use finfo;
+use \finfo;
 
 class FileHelper extends \yii\helpers\FileHelper
 {
@@ -15,7 +15,7 @@ class FileHelper extends \yii\helpers\FileHelper
 
             for ($i = 0; $i < $len; $i++) {
                 $r = base_convert($str[$i], $fromBase, 10);
-                $q = bcadd(bcmul($q, $fromBase), $r);
+                $q = \bcadd(bcmul($q, $fromBase), $r);
             }
         } else {
             $q = $str;

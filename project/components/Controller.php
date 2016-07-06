@@ -1,6 +1,6 @@
 <?php
 
-namespace file\components;
+namespace app\components;
 
 abstract class Controller extends \yii\web\Controller
 {

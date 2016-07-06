@@ -1,14 +1,14 @@
 <?php
 
-namespace file\controllers;
+namespace app\controllers;
 
-use file\components\Controller;
-use file\components\FileSaver;
+use app\components\Controller;
+use app\components\FileSaver;
 use Yii;
 use yii\web\ForbiddenHttpException;
 
 /**
- * @package file\controllers
+ * @package controllers
  */
 class FileController extends Controller
 {

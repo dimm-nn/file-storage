@@ -1,8 +1,8 @@
 <?php
 
-namespace file\components;
+namespace app\components;
 
-use file\helpers\FileHelper;
+use app\helpers\FileHelper;
 use Yii;
 use yii\base\Object;
 
