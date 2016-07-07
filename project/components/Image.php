@@ -4,7 +4,6 @@ namespace app\components;
 
 use Imagine\Filter\Transformation;
 use Imagine\Gmagick\Imagine;
-use Imagine\Image\ImageInterface;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -18,6 +17,8 @@ use yii\web\Response;
  */
 class Image extends Component
 {
+    const DEFAULT_QUALITY = 85;
+
     public $uploadSecret;
     public $downloadSecret;
 
@@ -27,6 +28,7 @@ class Image extends Component
      * Available operations:
      * - w - generate thumbnail with width equal `w` (default - original)
      * - h - generate thumbnail with height equal `h` (default - original)
+     * - q - quality of thumbnail (default - 85%)
      *
      * @param string $imagePath
      * @param array $params
@@ -38,6 +40,8 @@ class Image extends Component
         $image = $imagine->open($imagePath);
         $options = [];
 
+        $format = $this->getFormat($imagePath);
+
         // Thumbnail
         if (!empty($params['w']) || !empty($params['h'])) {
             $box = new \Imagine\Image\Box(
@@ -48,13 +52,31 @@ class Image extends Component
             $transformation->thumbnail($box);
         }
 
+        $quality = $params['q'] ?? self::DEFAULT_QUALITY;
+
+        switch ($format) {
+            case 'png':
+                $options['png_compression_filter'] = ceil($quality / 10);
+                break;
+            case 'jpg':
+            case 'jpeg':
+            case 'pjpeg':
+                $options['jpeg_quality'] = $quality;
+                break;
+        }
+
         Yii::$app->response->format = Response::FORMAT_RAW;
 
+        $transformation->apply($image)->show($format, $options);
+    }
+
+    private function getFormat($imagePath)
+    {
         $info   = getimagesize($imagePath);
         $mime   = $info['mime'];
-        $format = explode('/', $mime)[1];
+        list(, $format) = explode('/', $mime);
 
-        $transformation->apply($image)->show($format, $options);
+        return $format;
     }
 
     public function init()
