@@ -2,7 +2,9 @@
 
 namespace app\components;
 
+use Imagine\Filter\Transformation;
 use Imagine\Gmagick\Imagine;
+use Imagine\Image\ImageInterface;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -18,6 +20,42 @@ class Image extends Component
 {
     public $uploadSecret;
     public $downloadSecret;
+
+    /**
+     * Make operation to image
+     *
+     * Available operations:
+     * - w - generate thumbnail with width equal `w` (default - original)
+     * - h - generate thumbnail with height equal `h` (default - original)
+     *
+     * @param string $imagePath
+     * @param array $params
+     */
+    public function makeImage($imagePath, $params)
+    {
+        $imagine = new Imagine;
+        $transformation = new Transformation();
+        $image = $imagine->open($imagePath);
+        $options = [];
+
+        // Thumbnail
+        if (!empty($params['w']) || !empty($params['h'])) {
+            $box = new \Imagine\Image\Box(
+                (int) ($params['w'] ?? $params['h']),
+                (int) ($params['h'] ?? $params['w'])
+            );
+
+            $transformation->thumbnail($box);
+        }
+
+        Yii::$app->response->format = Response::FORMAT_RAW;
+
+        $info   = getimagesize($imagePath);
+        $mime   = $info['mime'];
+        $format = explode('/', $mime)[1];
+
+        $transformation->apply($image)->show($format, $options);
+    }
 
     public function init()
     {
@@ -239,40 +277,5 @@ class Image extends Component
             return readlink($symlinkPath);
 
         return false;
-    }
-
-    /**
-     * Создание и отдача изображения используя phpThumb
-     * @param string $physicalPath путь к файлу-оригиналу.
-     * @param array $params параметры нового изображения
-     * @param string $project проект
-     */
-    public function generateImage($physicalPath, $params)
-    {
-        $imagine = new Imagine;
-
-        $options = [];
-
-        $image = $imagine->open($physicalPath);
-
-        if (!empty($params['w']) || !empty($params['h'])) {
-            $box = new \Imagine\Image\Box(
-                (int) ($params['w'] ?? 0),
-                (int) ($params['h'] ?? 0)
-            );
-
-            $image->thumbnail($box);
-        }
-
-        if (!isset($params['q']) && (isset($params['w']) || isset($params['h']))) {
-            $options['quality'] = 80;
-        }
-
-        Yii::$app->response->format = Response::FORMAT_RAW;
-
-        $info   = getimagesize($physicalPath);
-        $mime   = $info['mime'];
-
-        $image->show($mime, $options);
     }
 }

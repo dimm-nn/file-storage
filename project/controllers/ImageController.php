@@ -54,7 +54,7 @@ class ImageController extends Controller
             $thumbParams = Helper::internalDecodeParams($params);
             $thumbParams['f'] = $extension;
 
-            Yii::$app->image->generateImage($physicalPath, $thumbParams);
+            Yii::$app->image->makeImage($physicalPath, $thumbParams);
         } elseif ($extension == $physicalExtension) {
             Yii::$app->response->sendFile(basename($filePath), file_get_contents($physicalPath));
         }
