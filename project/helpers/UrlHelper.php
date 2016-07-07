@@ -2,7 +2,7 @@
 
 namespace app\helpers;
 
-class Helper
+class UrlHelper
 {
     public static function internalDecodeParams($paramString)
     {

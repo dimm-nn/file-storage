@@ -2,7 +2,7 @@
 
 namespace app\helpers;
 
-use \finfo;
+use finfo;
 
 class FileHelper extends \yii\helpers\FileHelper
 {
@@ -47,8 +47,7 @@ class FileHelper extends \yii\helpers\FileHelper
         static $lengthOfPiece = 2;
         $pieces = [];
 
-        do
-        {
+        do {
             $pieces[] = substr($name, count($pieces) * $lengthOfPiece, $lengthOfPiece);
         } while (count($pieces) < $count);
 
@@ -65,16 +64,13 @@ class FileHelper extends \yii\helpers\FileHelper
     {
         $mime = FileHelper::getMimeType($filePath);
 
-        if ($mime)
-        {
-            $mime = explode(';', $mime)[0];
-            return explode('/', $mime)[1];
+        if ($mime) {
+            return self::getExtensionFromMime($mime);
         }
 
         $imageInfo = getimagesize($filePath);
 
-        if (isset($imageInfo['mime']))
-        {
+        if (isset($imageInfo['mime'])) {
             $extension = explode('/', $imageInfo['mime'])[1];
 
             return ($extension == 'jpeg' ? 'jpg' : $extension);
@@ -83,12 +79,21 @@ class FileHelper extends \yii\helpers\FileHelper
         $fileInfo = new finfo(FILEINFO_MIME);
         $mime = @$fileInfo->buffer(file_get_contents($filePath));
 
-        if ($mime)
-        {
-            $mime = explode(';', $mime)[0];
-            return explode('/', $mime)[1];
+        if ($mime) {
+            return self::getExtensionFromMime($mime);
         }
 
         return false;
+    }
+
+    private static function getExtensionFromMime($mime)
+    {
+        if ($mime) {
+            $mime = explode(';', $mime)[0];
+
+            return explode('/', $mime)[1];
+        }
+
+        return null;
     }
 }

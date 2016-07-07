@@ -6,15 +6,20 @@ use app\helpers\FileHelper;
 use Yii;
 use yii\base\Object;
 
-class FileSaver extends Object
+class FileSaver
 {
-    public $projectName;
+    public $_projectName;
+
+    public function __construct($project)
+    {
+        $this->_projectName = $project;
+    }
 
     public function save()
     {
         $files = $this->saveFiles();
 
-        if ($url = Yii::$app->request->get('urls', [])) {
+        if ($url = Yii::$app->request->post('urls', [])) {
             $files = array_merge($files, $this->uploadFiles($url));
         }
 
@@ -53,15 +58,7 @@ class FileSaver extends Object
             return false;
         }
 
-        if (($extensionStart = strrpos($fileName, '_')) !== false) {
-            $extension = substr($fileName, $extensionStart + 1);
-        } else {
-            $extension = FileHelper::getExtension($filePath['tmp_name']);
-        }
-
-        $sha = sha1_file($filePath['tmp_name']);
-
-        $newFileName = $this->makeNewFileName($sha, $extension);
+        $newFileName = $this->makePathData($filePath['tmp_name']);
 
         list($webPath, $fileAbsolutePath, $fileDir, $fileName) = $newFileName;
 
@@ -69,9 +66,7 @@ class FileSaver extends Object
             return $webPath;
         }
 
-        if (!is_dir($fileDir)) {
-            mkdir($fileDir, 0775, true);
-        }
+        $this->mkdir($fileDir);
 
         move_uploaded_file($filePath['tmp_name'], $fileAbsolutePath);
 
@@ -158,22 +153,26 @@ class FileSaver extends Object
 
     private function saveUploadedFile($url, $fileContent)
     {
-        $tempFile = Yii::getAlias('application.runtime').DIRECTORY_SEPARATOR.uniqid('_upload').pathinfo($url, PATHINFO_EXTENSION);
+        $uploadDir = Yii::getAlias('@app/runtime/upload');
+
+        $this->mkdir($uploadDir);
+
+        $tempFile = $uploadDir
+            . DIRECTORY_SEPARATOR
+            . pathinfo($url, PATHINFO_FILENAME)
+            . '.'
+            . pathinfo($url, PATHINFO_EXTENSION);
+
         file_put_contents($tempFile, $fileContent);
 
-        $extension = FileHelper::getExtension($tempFile);
+        list($webPath, $physicalPath, $storageDir, $storageName) = $this->makePathData($tempFile);
 
-        $sha = sha1($fileContent);
-        list($webPath, $physicalPath, $storageDir, $storageName) = $this->makeNewFileName($sha, $extension);
-
-        if (is_file($physicalPath))
-        {
+        if (is_file($physicalPath)) {
             unlink($tempFile);
             return $webPath;
         }
 
-        if (!is_dir($storageDir))
-            mkdir($storageDir, 0775, true);
+        $this->mkdir($storageDir);
 
         rename($tempFile, $physicalPath);
 
@@ -183,10 +182,14 @@ class FileSaver extends Object
         return $webPath;
     }
 
-    public function makeNewFileName($sha, $extension)
+    public function makePathData($fileName)
     {
         static $nameLength = 13;
         static $shaOffset = 0;
+
+        $extension = FileHelper::getExtension($fileName);
+
+        $sha = sha1_file($fileName);
 
         $shaBase36 = FileHelper::internalBaseConvert($sha, 16, 36);
         $webName   = substr($shaBase36, $shaOffset, $nameLength);
@@ -195,7 +198,7 @@ class FileSaver extends Object
             $webName = str_pad($webName, $nameLength, '0', STR_PAD_LEFT);
         }
 
-        $fileDirPath = Yii::getAlias('@storage') . '/' . $this->projectName;
+        $fileDirPath = Yii::getAlias('@storage') . '/' . $this->_projectName;
 
         $fileParts = FileHelper::splitNameIntoParts($webName);
         $fileName = end($fileParts);
@@ -215,5 +218,12 @@ class FileSaver extends Object
             $fileDirPath,
             $fileName
         ];
+    }
+
+    private function mkdir($path)
+    {
+        if (!is_dir($path)) {
+            mkdir($path, 0775, true);
+        }
     }
 }

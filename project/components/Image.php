@@ -2,8 +2,10 @@
 
 namespace app\components;
 
+use app\helpers\FileHelper;
 use Imagine\Filter\Transformation;
 use Imagine\Gmagick\Imagine;
+use Imagine\Image\Box;
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
@@ -40,11 +42,11 @@ class Image extends Component
         $image = $imagine->open($imagePath);
         $options = [];
 
-        $format = $this->getFormat($imagePath);
+        $format = FileHelper::getExtension($imagePath);
 
         // Thumbnail
         if (!empty($params['w']) || !empty($params['h'])) {
-            $box = new \Imagine\Image\Box(
+            $box = new Box(
                 (int) ($params['w'] ?? $params['h']),
                 (int) ($params['h'] ?? $params['w'])
             );
@@ -68,15 +70,6 @@ class Image extends Component
         Yii::$app->response->format = Response::FORMAT_RAW;
 
         $transformation->apply($image)->show($format, $options);
-    }
-
-    private function getFormat($imagePath)
-    {
-        $info   = getimagesize($imagePath);
-        $mime   = $info['mime'];
-        list(, $format) = explode('/', $mime);
-
-        return $format;
     }
 
     public function init()
@@ -231,56 +224,6 @@ class Image extends Component
     }
 
     /**
-     * @param $filePath
-     * @param $params
-     * @return string
-     */
-    public function internalHash($filePath, $params)
-    {
-        $hash = hash(
-            'crc32',
-            $this->downloadSecret . $filePath . $params . $this->downloadSecret
-        );
-
-        return str_pad($this->internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);
-    }
-
-    /**
-     * @param $number
-     * @param $fromBase
-     * @param $toBase
-     * @return int|string
-     */
-    public function internalBaseConvert($number, $fromBase, $toBase)
-    {
-        $str = trim($number);
-        if (intval($fromBase) != 10) {
-            $len = strlen($str);
-            $q = 0;
-
-            for ($i=0; $i<$len; $i++) {
-                $r = base_convert($str[$i], $fromBase, 10);
-                $q = bcadd(bcmul($q, $fromBase), $r);
-            }
-        } else {
-            $q = $str;
-        }
-
-        if (intval($toBase) != 10) {
-            $s = '';
-            while (bccomp($q, '0', 0) > 0) {
-                $r = intval(bcmod($q, $toBase));
-                $s = base_convert($r, 10, $toBase) . $s;
-                $q = bcdiv($q, $toBase, 0);
-            }
-        } else {
-            $s = $q;
-        }
-
-        return $s;
-    }
-
-    /**
      * По uri-имени возвращает путь к файлу-оригиналу или false если он не найден.
      * @param string $webPath
      * @return string|boolean
@@ -299,5 +242,21 @@ class Image extends Component
             return readlink($symlinkPath);
 
         return false;
+    }
+
+    /**
+     * @param $filePath
+     * @param $params
+     * @param $downloadSecret
+     * @return string
+     */
+    public function internalHash($filePath, $params)
+    {
+        $hash = hash(
+            'crc32',
+            $this->downloadSecret . $filePath . $params . $this->downloadSecret
+        );
+
+        return str_pad(FileHelper::internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);
     }
 }

@@ -27,13 +27,8 @@ class FileController extends Controller
             throw new ForbiddenHttpException();
         }
 
-        $file = Yii::createObject([
-            'class' => FileSaver::class,
-            'projectName' => $project,
-        ]);
+        $fileComponent = new FileSaver($project);
 
-        $files = $file->save();
-
-        echo json_encode($files);
+        echo json_encode($fileComponent->save());
     }
 }

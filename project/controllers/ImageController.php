@@ -4,7 +4,7 @@ namespace app\controllers;
 
 use app\components\Controller;
 use app\helpers\FileHelper;
-use app\helpers\Helper;
+use app\helpers\UrlHelper;
 use Yii;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
@@ -34,7 +34,7 @@ class ImageController extends Controller
         $nameParts = FileHelper::splitNameIntoParts($file);
 
         $pathPrefix = $project . '/' . implode('/', $nameParts);
-        $filePath = $pathPrefix.'.'.$extension;
+        $filePath = $pathPrefix . '.' . $extension;
 
         if (Yii::$app->image->internalHash($hashPath, $params) !== $hash) {
             throw new BadRequestHttpException();
@@ -51,14 +51,13 @@ class ImageController extends Controller
         $extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
 
         if (in_array($extension, $extensions) && in_array($physicalExtension, $extensions)) {
-            $thumbParams = Helper::internalDecodeParams($params);
+            $thumbParams = UrlHelper::internalDecodeParams($params);
             $thumbParams['f'] = $extension;
 
             Yii::$app->image->makeImage($physicalPath, $thumbParams);
         } elseif ($extension == $physicalExtension) {
             Yii::$app->response->sendFile(basename($filePath), file_get_contents($physicalPath));
-        }
-        else {
+        } else {
             throw new BadRequestHttpException();
         }
     }
