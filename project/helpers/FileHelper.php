@@ -62,7 +62,7 @@ class FileHelper extends \yii\helpers\FileHelper
      */
     public static function getExtension($filePath)
     {
-        $mime = FileHelper::getMimeType($filePath);
+        $mime = self::getMimeType($filePath);
 
         if ($mime) {
             return self::getExtensionFromMime($mime);
@@ -77,7 +77,7 @@ class FileHelper extends \yii\helpers\FileHelper
         }
 
         $fileInfo = new finfo(FILEINFO_MIME);
-        $mime = @$fileInfo->buffer(file_get_contents($filePath));
+        $mime = $fileInfo->file($filePath);
 
         if ($mime) {
             return self::getExtensionFromMime($mime);
