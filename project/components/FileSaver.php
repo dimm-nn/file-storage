@@ -15,25 +15,22 @@ class FileSaver
         $this->_projectName = $project;
     }
 
-    public function save()
-    {
-        $files = $this->saveFiles();
-
-        if ($url = Yii::$app->request->post('urls', [])) {
-            $files = array_merge($files, $this->uploadFiles($url));
-        }
-
-        return $files;
-    }
-
-    public function saveFiles()
+    public function upload()
     {
         $files = [];
 
-        foreach ($_FILES as $uploadedName => $uploadedFile)
-        {
-            $webPath = $this->saveFile($uploadedName, $uploadedFile);
-            $files[] = $webPath;
+        // Save files
+        foreach ($_FILES as $uploadedName => $uploadedFile) {
+            $files[$uploadedName] = $this->saveRawFile($uploadedFile);
+        }
+
+        // Save files by url
+        if ($urls = Yii::$app->request->post('urls', [])) {
+            $urlBlocks = array_chunk($urls, 7);
+
+            foreach ($urlBlocks as $urlBlock) {
+                $files = array_merge($files, $this->bulkLoad($urlBlock));
+            }
         }
 
         return $files;
@@ -49,7 +46,7 @@ class FileSaver
      * @param string $filePath
      * @return boolean|string false if has errors, uri on success upload.
      */
-    private function saveFile($fileName, $filePath)
+    private function saveRawFile($filePath)
     {
         if (!empty($filePath['error'])
             || ($filePath['size'] <= 0)
@@ -58,17 +55,33 @@ class FileSaver
             return false;
         }
 
-        $newFileName = $this->makePathData($filePath['tmp_name']);
+        return $this->saveFile($filePath['tmp_name']);
+    }
 
-        list($webPath, $fileAbsolutePath, $fileDir, $fileName) = $newFileName;
+    private function saveRemoteFile($url, $fileContent)
+    {
+        $tempFile = '/tmp'
+            . DIRECTORY_SEPARATOR
+            . pathinfo($url, PATHINFO_FILENAME)
+            . '.'
+            . pathinfo($url, PATHINFO_EXTENSION);
+
+        file_put_contents($tempFile, $fileContent);
+
+        return $this->saveFile($tempFile);
+    }
+
+    public function saveFile($tempFile)
+    {
+        list($webPath, $fileAbsolutePath, $fileDir, $fileName) = $this->makePathData($tempFile);
 
         if (is_file($fileAbsolutePath)) {
             return $webPath;
         }
 
-        $this->mkdir($fileDir);
+        $this->mkDir($fileDir);
 
-        move_uploaded_file($filePath['tmp_name'], $fileAbsolutePath);
+        move_uploaded_file($tempFile, $fileAbsolutePath);
 
         $fileLink = $fileDir . '/' . $fileName;
         if (!is_link($fileLink)) {
@@ -76,25 +89,6 @@ class FileSaver
         }
 
         return $webPath;
-    }
-
-    /**
-     * Save files by urls
-     *
-     * @param $urls
-     * @return array
-     */
-    private function uploadFiles($urls)
-    {
-        $urlBlocks = array_chunk($urls, 7);
-
-        $results = [];
-        foreach ($urlBlocks as $urlBlock)
-        {
-            $results = array_merge($results, $this->bulkLoad($urlBlock));
-        }
-
-        return $results;
     }
 
     private function bulkLoad($urls)
@@ -133,13 +127,10 @@ class FileSaver
         {
             $fileContent = (string)curl_multi_getcontent($handle);
 
-            if (empty($fileContent) || (curl_getinfo($handle, CURLINFO_HTTP_CODE) >= 400))
-            {
+            if (empty($fileContent) || (curl_getinfo($handle, CURLINFO_HTTP_CODE) >= 400)) {
                 $results[$url] = false;
-            }
-            else
-            {
-                $results[$url] = $this->saveUploadedFile($url, $fileContent);
+            } else {
+                $results[$url] = $this->saveRemoteFile($url, $fileContent);
             }
 
             curl_multi_remove_handle($multi, $handle);
@@ -149,37 +140,6 @@ class FileSaver
         curl_multi_close($multi);
 
         return $results;
-    }
-
-    private function saveUploadedFile($url, $fileContent)
-    {
-        $uploadDir = Yii::getAlias('@app/runtime/upload');
-
-        $this->mkdir($uploadDir);
-
-        $tempFile = $uploadDir
-            . DIRECTORY_SEPARATOR
-            . pathinfo($url, PATHINFO_FILENAME)
-            . '.'
-            . pathinfo($url, PATHINFO_EXTENSION);
-
-        file_put_contents($tempFile, $fileContent);
-
-        list($webPath, $physicalPath, $storageDir, $storageName) = $this->makePathData($tempFile);
-
-        if (is_file($physicalPath)) {
-            unlink($tempFile);
-            return $webPath;
-        }
-
-        $this->mkdir($storageDir);
-
-        rename($tempFile, $physicalPath);
-
-        if (!is_link($storageDir.$storageName))
-            symlink($physicalPath, $storageDir.$storageName);
-
-        return $webPath;
     }
 
     public function makePathData($fileName)
@@ -220,7 +180,7 @@ class FileSaver
         ];
     }
 
-    private function mkdir($path)
+    private function mkDir($path)
     {
         if (!is_dir($path)) {
             mkdir($path, 0775, true);

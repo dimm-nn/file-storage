@@ -29,6 +29,6 @@ class FileController extends Controller
 
         $fileComponent = new FileSaver($project);
 
-        echo json_encode($fileComponent->save());
+        echo json_encode($fileComponent->upload());
     }
 }
