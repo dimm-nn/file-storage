@@ -175,24 +175,6 @@ class Image extends Component
 
     /**
      * @param $url
-     * @param array $params
-     * @return mixed
-     */
-    public function foursquareUrl($url, array $params = [])
-    {
-        if (!empty($params['w']) && !empty($params['h'])) {
-            $url = str_replace('original', $params['w'] . 'x' . $params['h'], $url);
-        } elseif (!empty($params['w'])) {
-            $url = str_replace('original', 'width' . $params['w'], $url);
-        } elseif (!empty($params['h'])) {
-            $url = str_replace('original', 'height' . $params['h'], $url);
-        }
-
-        return $url;
-    }
-
-    /**
-     * @param $url
      * @return mixed
      */
     public function uploadByUrl($url)
