@@ -58,13 +58,9 @@ class FileSaver
         return $this->saveFile($filePath['tmp_name']);
     }
 
-    private function saveRemoteFile($url, $fileContent)
+    private function saveRemoteFile($fileContent)
     {
-        $tempFile = '/tmp'
-            . DIRECTORY_SEPARATOR
-            . pathinfo($url, PATHINFO_FILENAME)
-            . '.'
-            . pathinfo($url, PATHINFO_EXTENSION);
+        $tempFile = '/tmp/' . tmpfile();
 
         file_put_contents($tempFile, $fileContent);
 
@@ -130,7 +126,7 @@ class FileSaver
             if (empty($fileContent) || (curl_getinfo($handle, CURLINFO_HTTP_CODE) >= 400)) {
                 $results[$url] = false;
             } else {
-                $results[$url] = $this->saveRemoteFile($url, $fileContent);
+                $results[$url] = $this->saveRemoteFile($fileContent);
             }
 
             curl_multi_remove_handle($multi, $handle);
