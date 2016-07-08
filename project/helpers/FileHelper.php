@@ -8,31 +8,7 @@ class FileHelper extends \yii\helpers\FileHelper
 {
     public static function internalBaseConvert($number, $fromBase, $toBase)
     {
-        $str = trim($number);
-        if (intval($fromBase) != 10) {
-            $len = strlen($str);
-            $q = 0;
-
-            for ($i = 0; $i < $len; $i++) {
-                $r = base_convert($str[$i], $fromBase, 10);
-                $q = \bcadd(bcmul($q, $fromBase), $r);
-            }
-        } else {
-            $q = $str;
-        }
-
-        if (intval($toBase) != 10) {
-            $s = '';
-            while (bccomp($q, '0', 0) > 0) {
-                $r = intval(bcmod($q, $toBase));
-                $s = base_convert($r, 10, $toBase) . $s;
-                $q = bcdiv($q, $toBase, 0);
-            }
-        } else {
-            $s = $q;
-        }
-
-        return $s;
+        return gmp_strval(gmp_init($number, $fromBase), $toBase);
     }
 
     /**
@@ -62,9 +38,7 @@ class FileHelper extends \yii\helpers\FileHelper
      */
     public static function getExtension($filePath)
     {
-        $mime = self::getMimeType($filePath);
-
-        if ($mime) {
+        if ($mime = self::getMimeType($filePath)) {
             return self::getExtensionFromMime($mime);
         }
 
@@ -77,9 +51,8 @@ class FileHelper extends \yii\helpers\FileHelper
         }
 
         $fileInfo = new finfo(FILEINFO_MIME);
-        $mime = $fileInfo->file($filePath);
 
-        if ($mime) {
+        if ($mime = @$fileInfo->file($filePath)) {
             return self::getExtensionFromMime($mime);
         }
 
