@@ -77,7 +77,7 @@ class Image extends Component
         parent::init();
 
         if (empty($this->uploadSecret) || empty($this->downloadSecret)) {
-            throw new Exception('You need set upload and download secrets');
+            throw new Exception('You need set upload and download tokens');
         }
     }
 
@@ -160,7 +160,11 @@ class Image extends Component
 
         $encodedParams = $this->encodeParams($params);
 
-        $result = $this->getDomain($fileName).$fileName.'_'.$this->internalHash($src, $encodedParams).$encodedParams;
+        $result = $this->getDomain($fileName)
+            . $fileName
+            . '_'
+            . $this->internalHash($src, $encodedParams)
+            . $encodedParams;
 
         if ($translit) {
             $result .= '/'.$translit;
@@ -229,7 +233,6 @@ class Image extends Component
     /**
      * @param $filePath
      * @param $params
-     * @param $downloadSecret
      * @return string
      */
     public function internalHash($filePath, $params)

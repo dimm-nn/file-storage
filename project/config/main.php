@@ -24,7 +24,7 @@ return [
             'enableStrictParsing' => false,
             'showScriptName' => false,
             'rules' => [
-                'POST upload/<project:\w+>/<secret:\w+>' => 'file/upload',
+                'POST upload/<project:\w+>/<uploadToken:\w+>' => 'file/upload',
                 'GET <file:\w+>_<hash:\w{1,7}>.<extension:\w{3,4}>' => 'image/generate',
                 'GET <file:\w+>_<hash:\w{1,7}>/<translit>.<extension:\w{3,4}>' => 'image/generate',
                 'GET <file:\w+>_<hash:\w{1,7}><params:_[\w\_-]+>.<extension:\w{3,4}>' => 'image/generate',
