@@ -23,7 +23,7 @@ class FileController extends Controller
      */
     public function actionUpload($project, $uploadToken)
     {
-        if (!in_array($uploadToken, Yii::$app->params['secret'])) {
+        if (!in_array($uploadToken, Yii::$app->params['uploadToken'])) {
             throw new ForbiddenHttpException();
         }
 
