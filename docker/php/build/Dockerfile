@@ -18,9 +18,7 @@ RUN curl -sS https://getcomposer.org/installer \
     | php -- --install-dir=/usr/local/bin --filename=composer --version=1.0.3
 
 RUN apk add gmp php7-gmp
-
-RUN docker-php-ext-install gmp
-
-RUN echo "extension=/usr/lib/php7/modules/gmp.so" > /usr/local/etc/php/conf.d/00_gmp.ini
+    && docker-php-ext-install gmp
+    && echo "extension=/usr/lib/php7/modules/gmp.so" > /usr/local/etc/php/conf.d/00_gmp.ini
 
 CMD ["php-fpm"]
