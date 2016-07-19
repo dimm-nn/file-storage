@@ -3,9 +3,6 @@
     "minimum-stability": "stable",
     "require": {
         "php": "~7.0.6",
-        "consultnn/yii2-stream-target": "~1.0.0",
-        "yiisoft/yii2": "~2.0.8",
-        "masterexploder/phpthumb": "^2.1",
         "imagine/imagine": "~0.6.3"
     },
     "config": {
