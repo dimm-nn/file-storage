@@ -10,3 +10,6 @@ echo "Production"
 
 section "Выкачиваем docker образы"
 docker-compose -f ${DIR}/docker-compose.yml pull
+
+section "Устанавливаем composer зависимости"
+docker exec ${CONTAINER_PHP} composer install --prefer-dist --optimize-autoloader --no-dev
