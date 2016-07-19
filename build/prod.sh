@@ -5,11 +5,11 @@
 } 2>> /dev/null
 source $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh
 
-section "Используемое окружение"
+section "Used environment"
 echo "Production"
 
-section "Выкачиваем docker образы"
+section "Download latest docker images"
 docker-compose -f ${DIR}/docker-compose.yml pull
 
-section "Устанавливаем composer зависимости"
+section "Install composer dependencies"
 docker exec ${CONTAINER_PHP} composer install --prefer-dist --optimize-autoloader --no-dev

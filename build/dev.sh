@@ -5,8 +5,8 @@
 } 2>> /dev/null
 source $(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/_common.sh
 
-section "Используемое окружение"
+section "Used environment"
 echo "Development"
 
-section "Устанавливаем composer зависимости"
+section "Install composer dependencies"
 docker exec ${CONTAINER_PHP} composer install --prefer-dist --optimize-autoloader
