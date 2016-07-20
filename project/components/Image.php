@@ -15,7 +15,7 @@ class Image
 {
     const DEFAULT_QUALITY = 85;
 
-    public $downloadSecret;
+    public $downloadToken;
 
     /**
      * Make operation to image
@@ -159,7 +159,7 @@ class Image
     {
         $hash = hash(
             'crc32',
-            $this->downloadSecret . $filePath . $params . $this->downloadSecret
+            $this->downloadToken . $filePath . $params . $this->downloadToken
         );
 
         return str_pad(FileHelper::internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);

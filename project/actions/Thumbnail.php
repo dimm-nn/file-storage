@@ -18,6 +18,7 @@ class Thumbnail
      * @param string $extension расширение (формат) создаваемого файла
      * @param string $params дополнительные параметры конвертации
      * @param null $translit
+     * @throws \Exception
      * @throws \HttpException
      */
     public function run($file, $hash, $extension, $params = '', $translit = null)
@@ -32,7 +33,7 @@ class Thumbnail
         $filePath = $pathPrefix . '.' . $extension;
 
         if (\App::$instance->image->internalHash($hashPath, $params) !== $hash) {
-            throw new \HttpException(400);
+            throw new \Exception(400);
         }
 
         $physicalPath = \App::$instance->image->resolvePhysicalPath($filePath);

@@ -34,7 +34,6 @@ abstract class Router
         $urlParts = parse_url($request);
 
         $path = trim($urlParts['path'], '/');
-        $params = [];
 
         foreach (self::$_routes as $rule => $ruleData) {
             $method = $ruleData['verb'];
