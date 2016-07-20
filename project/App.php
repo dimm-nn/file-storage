@@ -84,7 +84,11 @@ class App
             return $this->$getter();
         }
 
-        return $this->__get($name);
+        if (isset($this->_components[$name])) {
+            return $this->_components[$name];
+        }
+
+        throw new \Exception('Property `' . $name . '` not exists`');
     }
 
     public function getConfig()
