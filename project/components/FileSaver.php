@@ -3,12 +3,10 @@
 namespace app\components;
 
 use app\helpers\FileHelper;
-use Yii;
-use yii\base\Object;
 
 class FileSaver
 {
-    public $_projectName;
+    private $_projectName;
 
     public function __construct($project)
     {
@@ -25,7 +23,7 @@ class FileSaver
         }
 
         // Save files by url
-        if ($urls = Yii::$app->request->post('urls', [])) {
+        if ($urls = $_POST['urls'] ?? []) {
             $urlBlocks = array_chunk($urls, 7);
 
             foreach ($urlBlocks as $urlBlock) {
@@ -42,7 +40,6 @@ class FileSaver
      * Also crete symlink on file without ext
      * "storage/{projectName}/firstDir/secondDir/../{fileName}" на файл.
      *
-     * @param string $fileName
      * @param string $filePath
      * @return boolean|string false if has errors, uri on success upload.
      */
@@ -124,9 +121,9 @@ class FileSaver
             $fileContent = (string)curl_multi_getcontent($handle);
 
             if (empty($fileContent) || (curl_getinfo($handle, CURLINFO_HTTP_CODE) >= 400)) {
-                $results[$url] = false;
+                $results[basename($url)] = false;
             } else {
-                $results[$url] = $this->saveRemoteFile($fileContent);
+                $results[basename($url)] = $this->saveRemoteFile($fileContent);
             }
 
             curl_multi_remove_handle($multi, $handle);
@@ -154,7 +151,7 @@ class FileSaver
             $webName = str_pad($webName, $nameLength, '0', STR_PAD_LEFT);
         }
 
-        $fileDirPath = Yii::getAlias('@storage') . '/' . $this->_projectName;
+        $fileDirPath = STORAGE_DIR . '/' . $this->_projectName;
 
         $fileParts = FileHelper::splitNameIntoParts($webName);
         $fileName = end($fileParts);

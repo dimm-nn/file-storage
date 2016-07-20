@@ -2,9 +2,7 @@
 
 namespace app\helpers;
 
-use finfo;
-
-class FileHelper extends \yii\helpers\FileHelper
+class FileHelper
 {
     public static function internalBaseConvert($number, $fromBase, $toBase)
     {
@@ -47,13 +45,7 @@ class FileHelper extends \yii\helpers\FileHelper
         if (isset($imageInfo['mime'])) {
             $extension = explode('/', $imageInfo['mime'])[1];
 
-            return ($extension == 'jpeg' ? 'jpg' : $extension);
-        }
-
-        $fileInfo = new finfo(FILEINFO_MIME);
-
-        if ($mime = @$fileInfo->file($filePath)) {
-            return self::getExtensionFromMime($mime);
+            return $extension == 'jpeg' ? 'jpg' : $extension;
         }
 
         return false;
@@ -65,6 +57,40 @@ class FileHelper extends \yii\helpers\FileHelper
             $mime = explode(';', $mime)[0];
 
             return explode('/', $mime)[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param $file
+     * @return mixed|null
+     */
+    public static function getMimeType($file)
+    {
+        $info = finfo_open(FILEINFO_MIME_TYPE);
+
+        if ($info) {
+            $result = finfo_file($info, $file);
+            finfo_close($info);
+
+            if ($result !== false) {
+                return $result;
+            }
+        }
+
+        return static::getMimeTypeByExtension($file);
+    }
+
+    public static function getMimeTypeByExtension($file)
+    {
+        $mimeTypes = \App::$instance->config['mime-types'];
+
+        if (($ext = pathinfo($file, PATHINFO_EXTENSION)) !== '') {
+            $ext = strtolower($ext);
+            if (isset($mimeTypes[$ext])) {
+                return $mimeTypes[$ext];
+            }
         }
 
         return null;

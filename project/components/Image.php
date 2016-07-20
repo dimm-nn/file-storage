@@ -6,22 +6,15 @@ use app\helpers\FileHelper;
 use Imagine\Filter\Transformation;
 use Imagine\Gmagick\Imagine;
 use Imagine\Image\Box;
-use Yii;
-use yii\base\Component;
-use yii\base\Exception;
-use yii\helpers\Html;
-use yii\helpers\Url;
-use yii\web\Response;
 
 /**
  * Class Image
  * @package common\helpers
  */
-class Image extends Component
+class Image
 {
     const DEFAULT_QUALITY = 85;
 
-    public $uploadSecret;
     public $downloadSecret;
 
     /**
@@ -67,18 +60,7 @@ class Image extends Component
                 break;
         }
 
-        Yii::$app->response->format = Response::FORMAT_RAW;
-
         $transformation->apply($image)->show($format, $options);
-    }
-
-    public function init()
-    {
-        parent::init();
-
-        if (empty($this->uploadSecret) || empty($this->downloadSecret)) {
-            throw new Exception('You need set upload and download tokens');
-        }
     }
 
     /**
@@ -87,48 +69,9 @@ class Image extends Component
      */
     public function getDomain($fileName)
     {
-        if (isset(Yii::$app->params['files']['host'])) {
-            return str_replace(
-                '{subdomain}',
-                substr($fileName, 0, 1),
-                Yii::$app->params['files']['host']
-            );
-        } else {
-            return '/';
-        }
-
-    }
-
-    /**
-     * @param $src
-     * @param array $params
-     * @param array $options
-     * @param null $default
-     * @return string
-     */
-    public function img($src, $params = [], $options = [], $default = null)
-    {
-        if (empty($src)) {
-            $src = $default;
-        } else {
-            $translit = '';
-            if (isset($options['translit'])) {
-                $translit = $options['translit'];
-                unset($options['translit']);
-            }
-
-            $src = $this->absoluteUrl($src, $params, $translit);
-        }
-
-        if (isset($params['w']) && !isset($options['width'])) {
-            $options['width'] = $params['w'];
-        }
-
-        if (isset($params['h']) && !isset($options['height'])) {
-            $options['height'] = $params['h'];
-        }
-
-        return Html::img($src, $options);
+        return 'http://'
+            . substr($fileName, 0, 1)
+            . '.' . $_SERVER['DOMAIN'];
     }
 
     /**
@@ -142,10 +85,6 @@ class Image extends Component
     {
         if (!$src) {
             return $default;
-        }
-
-        if (!Url::isRelative($src)) {
-            return $src;
         }
 
         $pathInfo = pathinfo($src);
@@ -178,25 +117,6 @@ class Image extends Component
     }
 
     /**
-     * @param $url
-     * @return mixed
-     */
-    public function uploadByUrl($url)
-    {
-        $serviceUrl = Yii::$app->params['files']['uploadHost'] . $this->uploadSecret . '/' . Yii::$app->params['files']['project'];
-        $post = http_build_query(['urls' => [$url]]);
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
-        curl_setopt($ch, CURLOPT_URL, $serviceUrl);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        $response = curl_exec($ch);
-
-        return json_decode($response, true)[$url];
-    }
-
-    /**
      * @param array $params
      * @return string
      */
@@ -216,7 +136,7 @@ class Image extends Component
      */
     public function resolvePhysicalPath($webPath)
     {
-        $storagePath = Yii::getAlias('@storage') . '/';
+        $storagePath = STORAGE_DIR . '/';
 
         if (is_file($storagePath.$webPath))
             return $storagePath.$webPath;
