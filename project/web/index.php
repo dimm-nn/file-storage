@@ -14,7 +14,7 @@ spl_autoload_register(['App', 'autoload'], true, true);
 
 \App::instance($config);
 
-Router::register('POST upload/<project:\w+>/<downloadToken:\w+>', Upload::class);
+Router::register('POST upload/<project:\w+>/<uploadToken:\w+>', Upload::class);
 Router::register(
     [
         'GET <file:\w+>_<hash:\w{1,7}>.<extension:\w{3,4}>',
