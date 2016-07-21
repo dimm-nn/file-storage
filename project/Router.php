@@ -44,7 +44,6 @@ abstract class Router
             }
 
             if (preg_match($rule, $path, $matches)) {
-
                 $params = array_filter(
                     $matches,
                     function ($key) use ($matches) {
