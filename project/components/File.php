@@ -15,9 +15,9 @@ class File
 
     /**
      * Save file by path
-     * "/storage/{projectName}/firstDir/secondDir/../{fileName}.{Extension}"
+     * "/storage/{projectName}/firstDir/secondDir/{fileName}.{Extension}"
      * Also crete symlink on file without ext
-     * "storage/{projectName}/firstDir/secondDir/../{fileName}" на файл.
+     * "storage/{projectName}/firstDir/secondDir/{fileName}" on file.
      *
      * @param string $filePath
      * @return boolean|string false if has errors, uri on success upload.

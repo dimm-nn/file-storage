@@ -16,7 +16,7 @@ class FileHelper
      * @param int $count
      * @return string[]
      */
-    public static function splitNameIntoParts($name, $count = 3)
+    public static function splitNameIntoParts($name, $count = 2)
     {
         static $lengthOfPiece = 2;
         $pieces = [];
