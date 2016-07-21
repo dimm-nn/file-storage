@@ -9,13 +9,10 @@ use Imagine\Image\Box;
 
 /**
  * Class Image
- * @package common\helpers
  */
 class Image
 {
     const DEFAULT_QUALITY = 85;
-
-    public $downloadToken;
 
     /**
      * Make operation to image
@@ -64,17 +61,6 @@ class Image
     }
 
     /**
-     * @param $fileName
-     * @return mixed|string
-     */
-    public function getDomain($fileName)
-    {
-        return 'http://'
-            . substr($fileName, 0, 1)
-            . '.' . $_SERVER['DOMAIN'];
-    }
-
-    /**
      * По uri-имени возвращает путь к файлу-оригиналу или false если он не найден.
      * @param string $webPath
      * @return string|boolean
@@ -93,20 +79,5 @@ class Image
             return readlink($symlinkPath);
 
         return false;
-    }
-
-    /**
-     * @param $filePath
-     * @param $params
-     * @return string
-     */
-    public function internalHash($filePath, $params)
-    {
-        $hash = hash(
-            'crc32',
-            $this->downloadToken . $filePath . $params . $this->downloadToken
-        );
-
-        return str_pad(FileHelper::internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);
     }
 }

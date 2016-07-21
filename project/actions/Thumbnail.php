@@ -2,6 +2,7 @@
 
 namespace app\actions;
 
+use app\components\Image;
 use app\helpers\FileHelper;
 use app\helpers\UrlHelper;
 
@@ -25,32 +26,31 @@ class Thumbnail
     {
         $project = $_SERVER['DOMAIN'];
 
-        $hashPath = $file . '.' . $extension;
+        $image = new Image;
 
-        $nameParts = FileHelper::splitNameIntoParts($file);
+        $fileName = $file . '.' . $extension;
 
-        $pathPrefix = $project . '/' . implode('/', $nameParts);
-        $filePath = $pathPrefix . '.' . $extension;
+        $generatedHash = FileHelper::internalHash($fileName, $params, \App::$instance->config['downloadToken']);
 
-        if (\App::$instance->image->internalHash($hashPath, $params) !== $hash) {
+        if ($generatedHash !== $hash) {
             throw new \Exception(400);
         }
 
-        $physicalPath = \App::$instance->image->resolvePhysicalPath($filePath);
+        $filePath = FileHelper::makePath($file, $project, $extension);
+        
+        $physicalPath = $image->resolvePhysicalPath($filePath);
 
         if (!$physicalPath) {
-            throw new \HttpException(404);
+            throw new \Exception(404);
         }
 
-        $extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-
-        if (in_array($extension, $extensions)) {
+        if (in_array($extension, \App::$instance->config['availableImageExtensions'])) {
             $thumbParams = UrlHelper::internalDecodeParams($params);
             $thumbParams['f'] = $extension;
 
-            \App::$instance->image->makeImage($physicalPath, $thumbParams);
+            $image->makeImage($physicalPath, $thumbParams);
         } else {
-            throw new \HttpException(400);
+            throw new \Exception(400);
         }
     }
 }

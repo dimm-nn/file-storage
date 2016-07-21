@@ -95,4 +95,29 @@ class FileHelper
 
         return null;
     }
+
+    public static function makePath($hash, $project, $extension)
+    {
+        $nameParts = FileHelper::splitNameIntoParts($hash);
+
+        $pathPrefix = $project . '/' . implode('/', $nameParts);
+        
+        return $pathPrefix . '.' . $extension;
+    }
+
+    /**
+     * @param $filePath
+     * @param $params
+     * @param $downloadToken
+     * @return string
+     */
+    public static function internalHash($filePath, $params, $downloadToken)
+    {
+        $hash = hash(
+            'crc32',
+            $downloadToken . $filePath . $params . $downloadToken
+        );
+
+        return str_pad(self::internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);
+    }
 }
