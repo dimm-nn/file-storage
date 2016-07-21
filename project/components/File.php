@@ -4,34 +4,13 @@ namespace app\components;
 
 use app\helpers\FileHelper;
 
-class FileSaver
+class File
 {
     private $_projectName;
 
     public function __construct($project)
     {
         $this->_projectName = $project;
-    }
-
-    public function upload()
-    {
-        $files = [];
-
-        // Save files
-        foreach ($_FILES as $uploadedName => $uploadedFile) {
-            $files[$uploadedName] = $this->saveRawFile($uploadedFile);
-        }
-
-        // Save files by url
-        if ($urls = $_POST['urls'] ?? []) {
-            $urlBlocks = array_chunk($urls, 7);
-
-            foreach ($urlBlocks as $urlBlock) {
-                $files = array_merge($files, $this->bulkLoad($urlBlock));
-            }
-        }
-
-        return $files;
     }
 
     /**
@@ -43,7 +22,7 @@ class FileSaver
      * @param string $filePath
      * @return boolean|string false if has errors, uri on success upload.
      */
-    private function saveRawFile($filePath)
+    public function saveRaw($filePath)
     {
         if (!empty($filePath['error'])
             || ($filePath['size'] <= 0)
@@ -52,19 +31,10 @@ class FileSaver
             return false;
         }
 
-        return $this->saveFile($filePath['tmp_name']);
+        return $this->save($filePath['tmp_name']);
     }
 
-    private function saveRemoteFile($fileContent)
-    {
-        $tempFile = '/tmp/' . tmpfile();
-
-        file_put_contents($tempFile, $fileContent);
-
-        return $this->saveFile($tempFile);
-    }
-
-    public function saveFile($tempFile)
+    private function save($tempFile)
     {
         list($webPath, $fileAbsolutePath, $fileDir, $fileName) = $this->makePathData($tempFile);
 
@@ -84,7 +54,7 @@ class FileSaver
         return $webPath;
     }
 
-    private function bulkLoad($urls)
+    public function bulkLoad($urls)
     {
         $multi = curl_multi_init();
 
@@ -123,7 +93,12 @@ class FileSaver
             if (empty($fileContent) || (curl_getinfo($handle, CURLINFO_HTTP_CODE) >= 400)) {
                 $results[basename($url)] = false;
             } else {
-                $results[basename($url)] = $this->saveRemoteFile($fileContent);
+
+                $tempFile = '/tmp/' . tmpfile();
+
+                file_put_contents($tempFile, $fileContent);
+
+                $results[basename($url)] = $this->save($tempFile);
             }
 
             curl_multi_remove_handle($multi, $handle);
@@ -135,7 +110,7 @@ class FileSaver
         return $results;
     }
 
-    public function makePathData($fileName)
+    private function makePathData($fileName)
     {
         static $nameLength = 13;
         static $shaOffset = 0;

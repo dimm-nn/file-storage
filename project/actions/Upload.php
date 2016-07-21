@@ -2,7 +2,7 @@
 
 namespace app\actions;
 
-use app\components\FileSaver;
+use app\components\File;
 
 /**
  * @package controllers
@@ -14,7 +14,7 @@ class Upload
      * Return json answer with files names
      *
      * @param string $project
-     * @param string $uploadToken secret key (for auth)
+     * @param string $uploadToken secret token (for auth)
      * @throws \Exception
      */
     public function run($project, $uploadToken)
@@ -23,8 +23,23 @@ class Upload
             throw new \Exception(403);
         }
 
-        $fileComponent = new FileSaver($project);
+        $file = new File($project);
+        $result = [];
 
-        echo json_encode($fileComponent->upload());
+        // Save files
+        foreach ($_FILES as $name => $uploadedFile) {
+            $result[$name] = $file->saveRaw($uploadedFile);
+        }
+
+        // Save files by url
+        if ($urls = $_POST['urls'] ?? []) {
+            $urlBlocks = array_chunk($urls, 7);
+
+            foreach ($urlBlocks as $urlBlock) {
+                $result = array_merge($result, $file->bulkLoad($urlBlock));
+            }
+        }
+
+        echo json_encode($result);
     }
 }
