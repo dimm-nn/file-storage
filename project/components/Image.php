@@ -75,61 +75,6 @@ class Image
     }
 
     /**
-     * @param $src
-     * @param array $params
-     * @param string $translit
-     * @param null $default
-     * @return null|string
-     */
-    public function absoluteUrl($src, array $params = [], $translit = '', $default = null)
-    {
-        if (!$src) {
-            return $default;
-        }
-
-        $pathInfo = pathinfo($src);
-        $fileName = $pathInfo['filename'];
-
-        if (!empty($params['f'])) {
-            $pathInfo['extension'] = $params['f'];
-            unset($params['f']);
-        }
-
-        ksort($params);
-
-        $encodedParams = $this->encodeParams($params);
-
-        $result = $this->getDomain($fileName)
-            . $fileName
-            . '_'
-            . $this->internalHash($src, $encodedParams)
-            . $encodedParams;
-
-        if ($translit) {
-            $result .= '/'.$translit;
-        }
-
-        if (!empty($pathInfo['extension'])) {
-            $result .='.'.$pathInfo['extension'];
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $params
-     * @return string
-     */
-    private function encodeParams(array $params)
-    {
-        $result = '';
-        foreach ($params as $key => $value) {
-            $result .= '_'.$key.'-'.$value;
-        }
-        return $result;
-    }
-
-    /**
      * По uri-имени возвращает путь к файлу-оригиналу или false если он не найден.
      * @param string $webPath
      * @return string|boolean
