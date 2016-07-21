@@ -19,7 +19,7 @@ class Upload
      */
     public function run($project, $uploadToken)
     {
-        if (!in_array($uploadToken, \App::instance()->config['uploadToken'])) {
+        if (!in_array($uploadToken, \App::instance()->config['uploadTokens'])) {
             throw new \Exception(403);
         }
 

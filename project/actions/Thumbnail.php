@@ -30,9 +30,7 @@ class Thumbnail
 
         $fileName = $file . '.' . $extension;
 
-        $generatedHash = FileHelper::internalHash($fileName, $params, \App::$instance->config['downloadToken']);
-
-        if ($generatedHash !== $hash) {
+        if (FileHelper::availableHash($hash,$fileName, $params) === false) {
             throw new \Exception(400);
         }
 
