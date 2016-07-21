@@ -120,4 +120,17 @@ class FileHelper
 
         return str_pad(self::internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);
     }
+
+    public static function availableHash($hash, $fileName, $params)
+    {
+        foreach (\App::$instance->config['downloadTokens'] as $token) {
+            $newHash = FileHelper::internalHash($fileName, $params, $token);
+
+            if ($newHash === $hash) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }
