@@ -3,7 +3,6 @@
 /**
  * Class App
  * @property array $config
- * @property app\components\Image $image
  */
 class App
 {
@@ -12,33 +11,10 @@ class App
      */
     public static $instance;
     private $_configs;
-    private $_components;
 
     private function __construct(array $configs)
     {
         $this->_configs = $configs;
-
-        $this->initComponents();
-    }
-
-    private function initComponents()
-    {
-        $components = $this->_configs['components'] ?? [];
-
-        foreach ($components as $componentName => $component) {
-            $class = $component['class'] ?? false;
-            unset($component['class']);
-
-            if ($class) {
-                $componentObject = new $class;
-
-                foreach ($component as $key => $value) {
-                    $componentObject->$key = $value;
-                }
-
-                $this->_components[$componentName] = $componentObject;
-            }
-        }
     }
 
     public static function autoload($className)
@@ -82,10 +58,6 @@ class App
         $getter = 'get' . $name;
         if (method_exists($this, $getter)) {
             return $this->$getter();
-        }
-
-        if (isset($this->_components[$name])) {
-            return $this->_components[$name];
         }
 
         throw new \Exception('Property `' . $name . '` not exists`');
