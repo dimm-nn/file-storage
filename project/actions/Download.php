@@ -9,15 +9,15 @@ use app\helpers\UrlHelper;
 /**
  * @package actions
  */
-class Thumbnail
+class Download
 {
     /**
-     * Generate new image by params.
+     * Get file by params.
      *
-     * @param string $file uri-имя исходного (физического) файла
-     * @param string $hash контрольная сумма uri физического файла и параметров
-     * @param string $extension расширение (формат) создаваемого файла
-     * @param string $params дополнительные параметры конвертации
+     * @param string $file file hash name
+     * @param string $hash secure hash based on file name and params
+     * @param string $extension file extension
+     * @param string $params download params
      * @param null $translit
      * @throws \Exception
      * @throws \HttpException
@@ -25,8 +25,6 @@ class Thumbnail
     public function run($file, $hash, $extension, $params = '', $translit = null)
     {
         $project = $_SERVER['DOMAIN'];
-
-        $image = new Image;
 
         $fileName = $file . '.' . $extension;
 
@@ -46,7 +44,7 @@ class Thumbnail
             $thumbParams = UrlHelper::internalDecodeParams($params);
             $thumbParams['f'] = $extension;
 
-            $image->makeImage($physicalPath, $thumbParams);
+            (new Image)->makeImage($physicalPath, $thumbParams);
         } else {
             throw new \Exception(400);
         }

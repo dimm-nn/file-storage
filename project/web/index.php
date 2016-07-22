@@ -1,6 +1,6 @@
 <?php
 
-use app\actions\Thumbnail;
+use app\actions\Download;
 use app\actions\Upload;
 use app\Router;
 
@@ -22,7 +22,7 @@ Router::register(
         'GET <file:\w+>_<hash:\w{1,7}><params:_[\w\_-]+>.<extension:\w{3,4}>',
         'GET <file:\w+>_<hash:\w{1,7}><params:_[\w\_-]+>/<translit>.<extension:\w{3,4}>',
     ],
-    Thumbnail::class
+    Download::class
 );
 
 echo Router::process($_SERVER['REQUEST_URI']);
