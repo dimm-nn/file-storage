@@ -44,7 +44,6 @@ abstract class Router
             }
 
             if (preg_match($rule, $path, $matches)) {
-
                 $params = array_filter(
                     $matches,
                     function ($key) use ($matches) {
@@ -53,7 +52,11 @@ abstract class Router
                     ARRAY_FILTER_USE_KEY
                 );
 
-                return call_user_func_array([new $class, 'run'], $params);
+                $action = new $class;
+
+                $preparedParams = self::prepareParams($action, $params);
+
+                return call_user_func_array([new $class, 'run'], $preparedParams);
             }
         }
 
@@ -88,5 +91,29 @@ abstract class Router
         $rule = '#^' . trim(strtr($template, $tr), '/') . '$#u';
 
         return $rule;
+    }
+
+    private static function prepareParams($action, $params)
+    {
+        $method = new \ReflectionMethod($action, 'run');
+
+        $actionParams = [];
+        foreach ($method->getParameters() as $param) {
+            $name = $param->getName();
+            if (array_key_exists($name, $params)) {
+                if ($param->isArray()) {
+                    $actionParams[$name] = (array) $params[$name];
+                } elseif (!is_array($params[$name])) {
+                    $actionParams[$name] = $params[$name];
+                } else {
+                    throw new \Exception('Invalid data received for parameter "'. $name .'".');
+                }
+                unset($params[$name]);
+            } elseif ($param->isDefaultValueAvailable()) {
+                $actionParams[$name] = $param->getDefaultValue();
+            }
+        }
+
+        return $actionParams;
     }
 }
