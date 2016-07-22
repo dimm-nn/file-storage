@@ -36,7 +36,7 @@ class Thumbnail
 
         $filePath = FileHelper::makePath($file, $project, $extension);
         
-        $physicalPath = $image->resolvePhysicalPath($filePath);
+        $physicalPath = FileHelper::resolvePhysicalPath($filePath);
 
         if (!$physicalPath) {
             throw new \Exception(404);

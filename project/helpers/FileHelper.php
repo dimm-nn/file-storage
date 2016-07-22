@@ -133,4 +133,25 @@ class FileHelper
 
         return false;
     }
+
+    /**
+     * По uri-имени возвращает путь к файлу-оригиналу или false если он не найден.
+     * @param string $webPath
+     * @return string|boolean
+     */
+    public static function resolvePhysicalPath($webPath)
+    {
+        $storagePath = STORAGE_DIR . '/';
+
+        if (is_file($storagePath.$webPath))
+            return $storagePath.$webPath;
+
+        $pathInfo = pathinfo($webPath);
+        $symlinkPath = $storagePath . $pathInfo['dirname'].'/'.$pathInfo['filename'];
+
+        if (is_link($symlinkPath))
+            return readlink($symlinkPath);
+
+        return false;
+    }
 }
