@@ -7,8 +7,5 @@ return [
     'downloadTokens' => [
         '9038463'
     ],
-    'availableImageExtensions' => [
-        'jpg', 'jpeg', 'png', 'gif', 'bmp',
-    ],
     'mime-types' => include __DIR__ . '/mime-types.php',
 ];

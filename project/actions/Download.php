@@ -2,9 +2,11 @@
 
 namespace app\actions;
 
-use app\components\Image;
 use app\helpers\FileHelper;
 use app\helpers\UrlHelper;
+use app\interfaces\FileWorker;
+use app\workers\File;
+use app\workers\Image;
 
 /**
  * @package actions
@@ -40,13 +42,29 @@ class Download
             throw new \Exception(404);
         }
 
-        if (in_array($extension, \App::$instance->config['availableImageExtensions'])) {
-            $thumbParams = UrlHelper::internalDecodeParams($params);
-            $thumbParams['f'] = $extension;
+        $thumbParams = UrlHelper::internalDecodeParams($params);
+        $thumbParams['f'] = $extension;
 
-            (new Image)->makeImage($physicalPath, $thumbParams);
-        } else {
-            throw new \Exception(400);
+        /** @var FileWorker $worker */
+        $worker = $this->getWorkerByExtension($extension);
+
+        $worker->makeFile($physicalPath, $thumbParams);
+    }
+
+    public function getWorkerByExtension($extension)
+    {
+        $class = File::class;
+
+        switch ($extension)
+        {
+            case 'jpg':
+            case 'png':
+            case 'jpeg':
+            case 'tiff':
+            case 'bmp':
+                $class = Image::class;
         }
+
+        return new $class;
     }
 }
