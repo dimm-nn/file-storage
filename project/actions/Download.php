@@ -39,7 +39,7 @@ class Download
         
         $physicalPath = FileHelper::resolvePhysicalPath($filePath);
 
-        if (!$physicalPath) {
+        if (!$physicalPath || !is_file($physicalPath)) {
             http_response_code(404);
             exit(0);
         }
