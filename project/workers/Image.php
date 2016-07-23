@@ -7,6 +7,7 @@ use app\interfaces\FileWorker;
 use Imagine\Filter\Transformation;
 use Imagine\Gmagick\Imagine;
 use Imagine\Image\Box;
+use Imagine\Image\ImageInterface;
 
 /**
  * Class Image
@@ -51,7 +52,11 @@ class Image implements FileWorker
 
         $options = array_merge($options, $this->getQualityOptions($format, $quality));
 
-        $transformation->apply($image)->show($format, $options);
+        /**
+         * @var ImageInterface $imagine
+         */
+        $imagine = $transformation->apply($image);
+        $imagine->show($format, $options);
     }
 
     /**
