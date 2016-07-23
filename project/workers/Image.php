@@ -24,6 +24,7 @@ class Image implements FileWorker
      * - w - generate thumbnail with width equal `w` (default - original)
      * - h - generate thumbnail with height equal `h` (default - original)
      * - q - quality of thumbnail (default - 85%)
+     * - zc - origin image proportions (default - equal)
      *
      * @param $path
      * @param $params
@@ -35,6 +36,11 @@ class Image implements FileWorker
         $transformation = new Transformation();
         $image = $imagine->open($path);
         $options = [];
+        $thumbnailMode = ImageInterface::THUMBNAIL_INSET;
+
+        if (isset($params['zc'])) {
+            $thumbnailMode = ImageInterface::THUMBNAIL_OUTBOUND;
+        }
 
         $format = FileHelper::getExtension($path);
 
@@ -45,7 +51,7 @@ class Image implements FileWorker
                 (int) ($params['h'] ?? $params['w'])
             );
 
-            $transformation->thumbnail($box);
+            $transformation->thumbnail($box, $thumbnailMode);
         }
 
         $quality = $params['q'] ?? self::DEFAULT_QUALITY;

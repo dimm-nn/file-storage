@@ -16,7 +16,7 @@ class UrlHelper
      */
     public static function internalDecodeParams($paramString)
     {
-        $result = array();
+        $result = [];
         if (preg_match_all('/_(?:([a-z]{1,4})\-([a-z\d]+))+/i', $paramString, $matches)) {
             foreach ($matches[1] as $idx => $paramName) {
                 $result[$paramName] = $matches[2][$idx];
