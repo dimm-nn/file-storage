@@ -44,13 +44,14 @@ class Download
             exit(0);
         }
 
-        $thumbParams = UrlHelper::internalDecodeParams($params);
-        $thumbParams['f'] = $extension;
+        $params = UrlHelper::internalDecodeParams($params);
+        $params['f'] = $extension;
+        $params['translit'] = $translit;
 
         /** @var FileWorker $worker */
         $worker = $this->getWorkerByExtension($extension);
 
-        $worker->makeFile($physicalPath, $thumbParams);
+        $worker->makeFile($physicalPath, $params);
     }
 
     public function getWorkerByExtension($extension)
