@@ -31,7 +31,8 @@ class Download
         $fileName = $file . '.' . $extension;
 
         if (FileHelper::availableHash($hash,$fileName, $params) === false) {
-            throw new \Exception(400);
+            http_response_code(400);
+            exit(0);
         }
 
         $filePath = FileHelper::makePath($file, $project, $extension);
@@ -39,7 +40,8 @@ class Download
         $physicalPath = FileHelper::resolvePhysicalPath($filePath);
 
         if (!$physicalPath) {
-            throw new \Exception(404);
+            http_response_code(404);
+            exit(0);
         }
 
         $thumbParams = UrlHelper::internalDecodeParams($params);

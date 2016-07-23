@@ -16,12 +16,12 @@ class Upload
      *
      * @param string $project
      * @param string $uploadToken secret token (for auth)
-     * @throws \Exception
      */
     public function run($project, $uploadToken)
     {
         if (!in_array($uploadToken, \App::instance()->config['uploadTokens'])) {
-            throw new \Exception(403);
+            http_response_code(403);
+            exit(0);
         }
 
         $this->_project = $project;

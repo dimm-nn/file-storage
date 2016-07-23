@@ -60,7 +60,8 @@ abstract class Router
             }
         }
 
-        throw new \Exception(404);
+        http_response_code(404);
+        exit(0);
     }
 
     private static function prepareRule($rule)
