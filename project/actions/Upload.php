@@ -4,7 +4,8 @@ namespace app\actions;
 use app\helpers\FileHelper;
 
 /**
- * @package controllers
+ * Class Upload
+ * @package app\actions
  */
 class Upload
 {
@@ -12,9 +13,9 @@ class Upload
 
     /**
      * Upload files from $_FILES and $_POST['url] arrays
-     * Return json answer with files names
+     * Return json answer with files hash names
      *
-     * @param string $project
+     * @param string $project project dir name
      * @param string $uploadToken secret token (for auth)
      */
     public function run($project, $uploadToken)
@@ -47,29 +48,32 @@ class Upload
     }
 
     /**
-     * Save file by path
-     * "/storage/{projectName}/firstDir/secondDir/{fileName}.{Extension}"
-     * Also crete symlink on file without ext
-     * "storage/{projectName}/firstDir/secondDir/{fileName}" on file.
+     * Save file using $_FILES array item
      *
-     * @param string $filePath
+     * @param array $file
      * @return boolean|string false if has errors, uri on success upload.
      */
-    public function saveRaw($filePath)
+    public function saveRaw($file)
     {
-        if (!empty($filePath['error'])
-            || ($filePath['size'] <= 0)
-            || !is_uploaded_file($filePath['tmp_name']))
+        if (!empty($file['error'])
+            || ($file['size'] <= 0)
+            || !is_uploaded_file($file['tmp_name']))
         {
             return false;
         }
 
-        return $this->save($filePath['tmp_name']);
+        return $this->save($file['tmp_name']);
     }
 
-    private function save($tempFile)
+    /**
+     * Save file by path
+     *
+     * @param string $filePath
+     * @return mixed
+     */
+    private function save($filePath)
     {
-        list($webPath, $fileAbsolutePath, $fileDir, $fileName) = $this->makePathData($tempFile);
+        list($webPath, $fileAbsolutePath, $fileDir, $fileName) = $this->makePathData($filePath);
 
         if (is_file($fileAbsolutePath)) {
             return $webPath;
@@ -79,7 +83,7 @@ class Upload
             mkdir($fileDir, 0775, true);
         }
 
-        move_uploaded_file($tempFile, $fileAbsolutePath);
+        move_uploaded_file($filePath, $fileAbsolutePath);
 
         $fileLink = $fileDir . '/' . $fileName;
         if (!is_link($fileLink)) {
@@ -89,6 +93,12 @@ class Upload
         return $webPath;
     }
 
+    /**
+     * Download portion of files by url
+     *
+     * @param array $urls
+     * @return array
+     */
     public function bulkLoad($urls)
     {
         $multi = curl_multi_init();
@@ -144,6 +154,12 @@ class Upload
         return $results;
     }
 
+    /**
+     * Make file info for save
+     * 
+     * @param string $fileName
+     * @return array
+     */
     private function makePathData($fileName)
     {
         static $nameLength = 13;

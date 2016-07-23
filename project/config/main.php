@@ -4,6 +4,7 @@ return [
     'uploadTokens' => [
         'd41d8cd98f00b204e9800998ecf8427e',
     ],
+    /** Secret tokens for download files **/
     'downloadTokens' => [
         '9038463'
     ],

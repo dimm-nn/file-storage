@@ -8,6 +8,10 @@ use Imagine\Filter\Transformation;
 use Imagine\Gmagick\Imagine;
 use Imagine\Image\Box;
 
+/**
+ * Class Image
+ * @package app\workers
+ */
 class Image implements FileWorker
 {
     const DEFAULT_QUALITY = 85;
@@ -22,6 +26,7 @@ class Image implements FileWorker
      *
      * @param $path
      * @param $params
+     * @return mixed|void
      */
     public function makeFile($path, $params = [])
     {
@@ -49,6 +54,11 @@ class Image implements FileWorker
         $transformation->apply($image)->show($format, $options);
     }
 
+    /**
+     * @param string $format
+     * @param int $quality
+     * @return array
+     */
     private function getQualityOptions($format, $quality)
     {
         $options = [];

@@ -9,7 +9,8 @@ use app\workers\File;
 use app\workers\Image;
 
 /**
- * @package actions
+ * class Download
+ * @package app\actions
  */
 class Download
 {
@@ -17,12 +18,10 @@ class Download
      * Get file by params.
      *
      * @param string $file file hash name
-     * @param string $hash secure hash based on file name and params
+     * @param string $hash secure hash (save from DDOS)
      * @param string $extension file extension
      * @param string $params download params
-     * @param null $translit
-     * @throws \Exception
-     * @throws \HttpException
+     * @param null $translit seo file name
      */
     public function run($file, $hash, $extension, $params = '', $translit = null)
     {
@@ -54,6 +53,12 @@ class Download
         $worker->makeFile($physicalPath, $params);
     }
 
+    /**
+     * Get worker by file extension what process file by params and echo him
+     * 
+     * @param $extension
+     * @return mixed
+     */
     public function getWorkerByExtension($extension)
     {
         $class = File::class;

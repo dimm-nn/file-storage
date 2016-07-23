@@ -2,8 +2,18 @@
 
 namespace app\helpers;
 
+/**
+ * Class FileHelper
+ * @package app\helpers
+ */
 class FileHelper
 {
+    /**
+     * @param $number
+     * @param $fromBase
+     * @param $toBase
+     * @return mixed
+     */
     public static function internalBaseConvert($number, $fromBase, $toBase)
     {
         return gmp_strval(gmp_init($number, $fromBase), $toBase);
@@ -51,6 +61,10 @@ class FileHelper
         return false;
     }
 
+    /**
+     * @param string $mime
+     * @return null|string
+     */
     private static function getExtensionFromMime($mime)
     {
         if ($mime) {
@@ -82,6 +96,10 @@ class FileHelper
         return static::getMimeTypeByExtension($file);
     }
 
+    /**
+     * @param string $file
+     * @return null|string
+     */
     public static function getMimeTypeByExtension($file)
     {
         $mimeTypes = \App::$instance->config['mime-types'];
@@ -96,6 +114,14 @@ class FileHelper
         return null;
     }
 
+    /**
+     * Make a path relative to the storage
+     *
+     * @param string $hash
+     * @param string $project
+     * @param string $extension
+     * @return string
+     */
     public static function makePath($hash, $project, $extension)
     {
         $nameParts = FileHelper::splitNameIntoParts($hash);
@@ -106,9 +132,11 @@ class FileHelper
     }
 
     /**
-     * @param $filePath
-     * @param $params
-     * @param $downloadToken
+     * Make secure hash based on file path, params and download token
+     *
+     * @param string $filePath
+     * @param array $params
+     * @param string $downloadToken
      * @return string
      */
     public static function internalHash($filePath, $params, $downloadToken)
@@ -121,6 +149,14 @@ class FileHelper
         return str_pad(self::internalBaseConvert($hash, 16, 36), 5, '0', STR_PAD_LEFT);
     }
 
+    /**
+     * Check what hash from request equal to origin hash
+     *
+     * @param string $hash
+     * @param string $fileName
+     * @param array $params
+     * @return bool
+     */
     public static function availableHash($hash, $fileName, $params)
     {
         foreach (\App::$instance->config['downloadTokens'] as $token) {
@@ -135,7 +171,7 @@ class FileHelper
     }
 
     /**
-     * По uri-имени возвращает путь к файлу-оригиналу или false если он не найден.
+     * Get real path by relative
      * @param string $webPath
      * @return string|boolean
      */

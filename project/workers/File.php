@@ -5,8 +5,15 @@ namespace app\workers;
 use app\helpers\FileHelper;
 use app\interfaces\FileWorker;
 
+/**
+ * Class File
+ * @package app\workers
+ */
 class File implements FileWorker
 {
+    /**
+     * @inheritdoc
+     */
     public function makeFile($path, $params = [])
     {
         $mimeType = FileHelper::getMimeType($path);

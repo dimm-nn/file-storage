@@ -10,13 +10,25 @@ class App
      * @var self
      */
     public static $instance;
+
+    /**
+     * @var array
+     */
     private $_configs;
 
+    /**
+     * App constructor.
+     * @param array $configs
+     */
     private function __construct(array $configs)
     {
         $this->_configs = $configs;
     }
 
+    /**
+     * @param string $className
+     * @throws Exception
+     */
     public static function autoload($className)
     {
         static $classMap;
@@ -44,6 +56,10 @@ class App
         }
     }
 
+    /**
+     * @param array $configs
+     * @return App|static
+     */
     public static function instance(array $configs = [])
     {
         if (empty(self::$instance)) {
@@ -53,6 +69,9 @@ class App
         return self::$instance;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function __get($name)
     {
         $getter = 'get' . $name;
@@ -63,6 +82,9 @@ class App
         throw new \Exception('Property `' . $name . '` not exists`');
     }
 
+    /**
+     * @return array
+     */
     public function getConfig()
     {
         return $this->_configs;

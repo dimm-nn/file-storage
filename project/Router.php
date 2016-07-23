@@ -2,10 +2,21 @@
 
 namespace app;
 
+/**
+ * Class Router
+ * @package app
+ */
 abstract class Router
 {
+    /**
+     * @var mixed
+     */
     private static $_routes;
 
+    /**
+     * @param array|string $rules
+     * @param string $action Class name
+     */
     public static function register($rules, $action)
     {
         $rules = (array) $rules;
@@ -64,6 +75,10 @@ abstract class Router
         exit(0);
     }
 
+    /**
+     * @param $rule
+     * @return string
+     */
     private static function prepareRule($rule)
     {
         $rule = trim($rule, '/');
@@ -94,6 +109,12 @@ abstract class Router
         return $rule;
     }
 
+    /**
+     * @param string $action
+     * @param array $params
+     * @return array
+     * @throws \Exception
+     */
     private static function prepareParams($action, $params)
     {
         $method = new \ReflectionMethod($action, 'run');

@@ -2,8 +2,18 @@
 
 namespace app\helpers;
 
+/**
+ * Class UrlHelper
+ * @package app\helpers
+ */
 class UrlHelper
 {
+    /**
+     * Decode string params to array
+     *
+     * @param string $paramString
+     * @return array
+     */
     public static function internalDecodeParams($paramString)
     {
         $result = array();
