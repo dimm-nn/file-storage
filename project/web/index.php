@@ -8,9 +8,14 @@ require(__DIR__ . '/../config/bootstrap.php');
 require(__DIR__ . '/../vendor/autoload.php');
 require(__DIR__ . '/../App.php');
 
-$config = require(__DIR__ . '/../config/main.php');
-
 spl_autoload_register(['App', 'autoload'], true, true);
+
+$localConfigPath = __DIR__ . '/mail-local.php';
+
+$config = array_merge(
+    require(__DIR__ . '/../config/main.php'),
+    file_exists($localConfigPath) ? include $localConfigPath : []
+);
 
 \App::instance($config);
 
