@@ -7,9 +7,9 @@ Docker
 Deploy app
 ===========
 1. Clone repository
-`git clone git@git.icc:consultnn/drivenn.git`
+`git clone git@github.com:consultnn/file-storage.git`
 2. Move in project dir
-`cd drivenn`
+`cd file-storage`
 3. Run docker containers
 `docker-compose up -d`
 4. Set build scripts executable
