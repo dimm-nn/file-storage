@@ -1,26 +1,25 @@
-FROM php:7.0.7-fpm-alpine
+FROM php:7.0.9-fpm-alpine
 
-RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
-
-RUN apk upgrade --update
-
-RUN apk --no-cache add git
+RUN echo 'http://dl-3.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories \
+        && apk add --no-cache --virtual .persistent-deps \
+	    git \
+	    graphicsmagick \
+	    gmp
 
 RUN set -xe \
-    && apk add --no-cache graphicsmagick graphicsmagick-dev libtool \
-    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+    && apk add --no-cache --virtual .build-deps \
+        $PHPIZE_DEPS \
+        graphicsmagick-dev \
+        libtool \
+        gmp-dev \
+    && docker-php-ext-install gmp \
     && pecl install gmagick-2.0.4RC1 \
-    && echo "extension=gmagick.so" > /usr/local/etc/php/conf.d/10-gmagick.ini
+    && docker-php-ext-enable gmagick \
+    && apk del .build-deps
+
 
 RUN curl -sS https://getcomposer.org/installer \
     | php -- --install-dir=/usr/local/bin --filename=composer --version=1.0.3
 
-RUN apk add --no-cache \
-    gmp \
-    php7-gmp \
-    && docker-php-ext-install gmp \
-    && echo "extension=/usr/lib/php7/modules/gmp.so" > /usr/local/etc/php/conf.d/00_gmp.ini
-
-RUN apk del .build-deps
 
 CMD ["php-fpm"]

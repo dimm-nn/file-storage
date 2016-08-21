@@ -1,3 +1,6 @@
+V2 under heavy development!
+==========================
+
 Docker
 ===========
 1. [Install Docker](https://docs.docker.com/engine/installation/linux/ubuntulinux/#/install)
@@ -23,5 +26,5 @@ Build scripts (placed in directory `./build`)
  
 Other documentation
 ===========
- - [API](docks/api.md)
- - [Configuration](docks/configuration.md)
+ - [API](docs/api.md)
+ - [Configuration](docs/configuration.md)
