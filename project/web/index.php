@@ -10,7 +10,7 @@ require(__DIR__ . '/../App.php');
 
 spl_autoload_register(['App', 'autoload'], true, true);
 
-$localConfigPath = __DIR__ . '/mail-local.php';
+$localConfigPath = __DIR__ . '/../config/main-local.php';
 
 $config = array_merge(
     require(__DIR__ . '/../config/main.php'),
