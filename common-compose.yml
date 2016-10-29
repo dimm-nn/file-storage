@@ -3,7 +3,7 @@ services:
   nginx:
     image: nginx:1.10.1-alpine
     volumes:
-    - ./project:/www
+    - ./src:/www
     - ./docker/nginx/conf.d:/etc/nginx/conf.d
     ports:
     - "8211:80"
@@ -12,7 +12,7 @@ services:
   php:
     build: ./docker/php/build
     volumes:
-    - ./project:/www:rw
+    - ./src:/www:rw
     - ./docker/php/php-fpm.conf:/usr/local/etc/php-fpm.conf
     - ./storage:/storage:rw
     working_dir: /www/
