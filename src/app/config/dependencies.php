@@ -1,23 +1,23 @@
 <?php
-// DIC configuration
 
-$container = $app->getContainer();
+declare(strict_types=1);
 
-$container['foundHandler'] = function () {
-    return new \Slim\Handlers\Strategies\RequestResponseArgs();
-};
+return [
+    'foundHandler' => function () {
+        return new \Slim\Handlers\Strategies\RequestResponseArgs();
+    },
+    // monolog
+    'logger' => function (\Interop\Container\ContainerInterface $container) {
+        $settings = $container->get('settings')['logger'];
+        $logger = new Monolog\Logger($settings['name']);
+        $logger->pushProcessor(new Monolog\Processor\UidProcessor());
+        $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
 
-// monolog
-$container['logger'] = function (\Interop\Container\ContainerInterface $c) {
-    $settings = $c->get('settings')['logger'];
-    $logger = new Monolog\Logger($settings['name']);
-    $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-    $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
-    return $logger;
-};
+        return $logger;
+    },
+    'storage' => function (\Interop\Container\ContainerInterface $container) {
+        $settings = $container->get('settings')['storage'];
 
-// storage
-$container['storage'] = function (\Interop\Container\ContainerInterface $c) {
-    $settings = $c->get('settings')['storage'];
-    return new \app\components\storage\Storage($settings);
-};
+        return new \app\components\storage\Storage($settings);
+    }
+];
