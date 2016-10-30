@@ -19,17 +19,11 @@ abstract class Action
     /** @var  \app\components\storage\Storage */
     protected $storage;
 
-    protected $project;
-
-    protected $token;
-
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
         $this->storage = $this->container->get('storage');
     }
-
-    abstract protected function authenticate($token);
 
     /**
      * @param string $project
@@ -44,10 +38,7 @@ abstract class Action
             throw new ContainerValueNotFoundException();
         }
 
-        $this->project = $project;
-
-        $projectSettings = $settings['projects'][$this->project];
-        $this->token = $projectSettings[$method]['token'];
+        $projectSettings = $settings['projects'][$project];
 
         $this->storage->configure($projectSettings['storage']);
     }

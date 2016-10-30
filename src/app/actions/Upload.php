@@ -14,21 +14,12 @@ use Slim\Http\Response;
  */
 class Upload extends Action
 {
-    public function authenticate($token)
-    {
-        return $this->token === $token;
-    }
-
     public function __invoke(Request $request, Response $response, string $project, string $token): Response
     {
         try {
             $this->init($project, 'upload');
         } catch (ContainerValueNotFoundException $e) {
             return $response->withStatus(400);
-        }
-
-        if (!$this->authenticate($token)) {
-            return $response->withStatus(401);
         }
 
         /** @var \Slim\Http\UploadedFile[] $files */
