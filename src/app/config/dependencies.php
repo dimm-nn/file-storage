@@ -16,8 +16,8 @@ return [
         return $logger;
     },
     'storage' => function (\Interop\Container\ContainerInterface $container) {
-        $settings = $container->get('settings')['storage'];
+        $settings = $container->get('settings');
 
-        return new \app\components\storage\Storage($settings);
+        return new \app\components\storage\Storage($settings['storage']);
     }
 ];

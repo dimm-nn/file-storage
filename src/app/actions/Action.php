@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace app\actions;
 
 use Interop\Container\ContainerInterface;
-use Slim\Exception\ContainerValueNotFoundException;
 
 /**
  * Class Action
@@ -23,23 +22,5 @@ abstract class Action
     {
         $this->container = $container;
         $this->storage = $this->container->get('storage');
-    }
-
-    /**
-     * @param string $project
-     * @param string $method
-     * @throws \Slim\Exception\ContainerValueNotFoundException
-     */
-    protected function init($project, $method)
-    {
-        $settings = $this->container->get('settings');
-
-        if (!isset($settings['projects'][$project])) {
-            throw new ContainerValueNotFoundException();
-        }
-
-        $projectSettings = $settings['projects'][$project];
-
-        $this->storage->configure($projectSettings['storage']);
     }
 }

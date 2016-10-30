@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\ContainerValueNotFoundException;
 
-class UploadAuth
+class Storage
 {
     /**
      * @var ContainerInterface
@@ -28,33 +28,26 @@ class UploadAuth
          */
         $route = $request->getAttribute('route');
 
-        $project = $route->getArgument('project');
-        $uploadToken = $route->getArgument('token');
-
-        try {
-            if (!$this->authenticate($project, $uploadToken)) {
-                return $response->withStatus(401);
-            }
-        } catch (ContainerValueNotFoundException $e) {
-            return $response->withStatus(401);
-        }
+        $this->configure($route->getArgument('project'));
 
         return $next($request, $response);
     }
 
-    private function authenticate($project, $token)
+    private function configure(string $name)
     {
-        /**
-         * @var \Slim\Collection $settings
-         */
         $settings = $this->container->get('settings');
 
-        $projects = $settings->get('projects');
-
-        if (!isset($projects[$project]['upload']['token'])) {
+        if (!isset($settings['projects'][$name])) {
             throw new ContainerValueNotFoundException();
         }
 
-        return $projects[$project]['upload']['token'] === $token;
+        $projectSettings = $settings['projects'][$name];
+
+        /**
+         * @var \app\components\storage\Storage $storage
+         */
+        $storage = $this->container->get('storage');
+
+        $storage->configure($projectSettings['storage']);
     }
 }
