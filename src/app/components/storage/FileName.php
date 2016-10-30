@@ -14,7 +14,6 @@ use League\Flysystem\Util\MimeType;
  */
 class FileName
 {
-
     /**
      * File extensions map for browsers
      * @var array
@@ -48,13 +47,13 @@ class FileName
 
         $mimeType = Util::guessMimeType($file, file_get_contents($file));
 
-        if (isset($mimeTypeToExtensionMap[$mimeType])) {
+        if (array_key_exists($mimeType, $mimeTypeToExtensionMap)) {
             $extension =  $mimeTypeToExtensionMap[$mimeType];
         } else {
             $extension = pathinfo($file, PATHINFO_EXTENSION);
         }
 
-        if (isset(self::$webExtensionsMap[$extension])) {
+        if (array_key_exists($extension, self::$webExtensionsMap)) {
             $extension = self::$webExtensionsMap[$extension];
         }
 
@@ -75,7 +74,4 @@ class FileName
     {
         return gmp_strval(gmp_init($number, $fromBase), $toBase);
     }
-
-
-
 }
