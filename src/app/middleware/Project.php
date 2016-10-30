@@ -10,27 +10,24 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class Project extends Middleware
 {
-
-    private $_name;
+    private $name;
 
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
-        $this->_name = $request->getAttribute('name');
+        $this->name = $request->getAttribute('name');
         $this->configure();
-
 
         return parent::__invoke($request, $response, $next);
     }
 
     private function configure()
     {
-        
-        $settings = $this->ci->get('settings')[$this->_name];
+        $settings = $this->ci->get('settings')[$this->name];
         $components = $settings['components'];
         unset($settings['middleware']);
         foreach ($settings as $name => $value) {
@@ -40,6 +37,5 @@ class Project extends Middleware
         foreach ($components as $name => $config) {
 
         }
-
     }
 }

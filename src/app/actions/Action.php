@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace app\actions;
 
@@ -13,7 +14,7 @@ use Slim\Exception\ContainerValueNotFoundException;
 abstract class Action
 {
     /** @var \Slim\Container */
-    protected $ci;
+    protected $container;
 
     /** @var  \app\components\storage\Storage */
     protected $storage;
@@ -22,10 +23,10 @@ abstract class Action
 
     protected $token;
 
-    public function __construct(ContainerInterface $ci)
+    public function __construct(ContainerInterface $container)
     {
-        $this->ci = $ci;
-        $this->storage = $this->ci->get('storage');
+        $this->container = $container;
+        $this->storage = $this->container->get('storage');
     }
 
     abstract protected function authenticate($token);
@@ -33,17 +34,21 @@ abstract class Action
     /**
      * @param string $project
      * @param string $method
+     * @throws \Slim\Exception\ContainerValueNotFoundException
      */
     protected function init($project, $method)
     {
-        if (!isset($this->ci->get('settings')['projects'][$project])) {
+        $settings = $this->container->get('settings');
+
+        if (!isset($settings['projects'][$project])) {
             throw new ContainerValueNotFoundException();
         }
+
         $this->project = $project;
 
-        $settings = $this->ci->get('settings')['projects'][$this->project];
-        $this->token = $settings[$method]['token'];
+        $projectSettings = $settings['projects'][$this->project];
+        $this->token = $projectSettings[$method]['token'];
 
-        $this->storage->configure($settings['storage']);
+        $this->storage->configure($projectSettings['storage']);
     }
 }

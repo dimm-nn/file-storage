@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
 
 namespace app\components\storage;
 
 use League\Flysystem\Exception;
 use League\Flysystem\Filesystem;
-use League\Flysystem\Util;
 
 /**
  * Class File
@@ -17,27 +17,27 @@ class File
 
     public $pathDeep = 2;
 
-    private $_name;
+    private $name;
 
-    private $_path;
+    private $path;
 
-    private $_extension;
+    private $extension;
 
-    private $_filesystem;
+    private $filesystem;
 
     /**
      * @param Filesystem $filesystem
      */
     public function __construct(Filesystem $filesystem)
     {
-        $this->_filesystem = $filesystem;
+        $this->filesystem = $filesystem;
     }
 
     public function load($name)
     {
-        $this->_name = $name;
-        if (!$this->_filesystem->has($this->getPath())) {
-            unset($this->_name);
+        $this->name = $name;
+        if (!$this->filesystem->has($this->getPath())) {
+            unset($this->name);
             throw new FileException("File with name '{$name}' does not exists");
         }
     }
@@ -57,16 +57,16 @@ class File
         }
 
         $newName = FileName::get($fileName);
-        $this->_name = $newName;
+        $this->name = $newName;
 
         try {
-            if (!$this->_filesystem->has($this->getPath())) {
+            if (!$this->filesystem->has($this->getPath())) {
                 $stream = fopen($fileName, 'r+');
-                $this->_filesystem->writeStream($this->getPath(), $stream);
+                $this->filesystem->writeStream($this->getPath(), $stream);
                 fclose($stream);
             }
         } catch (Exception $e) {
-            unset($this->_name);
+            unset($this->name);
             throw new FileException($e->getMessage());
         }
 
@@ -74,7 +74,7 @@ class File
 
     public function getContent()
     {
-        return $this->_filesystem->read($this->getPath());
+        return $this->filesystem->read($this->getPath());
     }
 
     /**
@@ -82,14 +82,14 @@ class File
      */
     public function getPath()
     {
-        if ($this->_path) {
-            return $this->_path;
+        if ($this->path) {
+            return $this->path;
         }
 
         $name = $this->getName();
         $directories = str_split(substr($name, 0, $this->directoryNameLength * $this->pathDeep), $this->pathDeep);
 
-        return $this->_path = implode(DIRECTORY_SEPARATOR, $directories) . DIRECTORY_SEPARATOR . $name;
+        return $this->path = implode(DIRECTORY_SEPARATOR, $directories) . DIRECTORY_SEPARATOR . $name;
     }
 
     /**
@@ -97,7 +97,7 @@ class File
      */
     public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
 
     /**
@@ -106,10 +106,10 @@ class File
      */
     public function getExtension()
     {
-        if ($this->_extension) {
-            return $this->_extension;
+        if ($this->extension) {
+            return $this->extension;
         }
 
-        return $this->_extension = pathinfo($this->_name, PATHINFO_EXTENSION);
+        return $this->extension = pathinfo($this->name, PATHINFO_EXTENSION);
     }
 }
