@@ -2,23 +2,36 @@
 
 declare(strict_types=1);
 
-namespace app\middleware;
+namespace app\middleware\auth;
 
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\ContainerValueNotFoundException;
 
-class UploadAuth
+class Auth
 {
+    const TYPE_UPLOAD = 'upload';
+    const TYPE_DOWNLOAD = 'download';
+
     /**
      * @var ContainerInterface
      */
     private $container;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * Auth type
+     *
+     * Available types: upload, download
+     *
+     * @var string
+     */
+    private $type;
+
+    public function __construct(ContainerInterface $container, string $type)
     {
         $this->container = $container;
+        $this->type = $type;
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
@@ -51,10 +64,10 @@ class UploadAuth
 
         $projects = $settings->get('projects');
 
-        if (!isset($projects[$project]['upload']['token'])) {
+        if (!isset($projects[$project][$this->type]['token'])) {
             throw new ContainerValueNotFoundException();
         }
 
-        return $projects[$project]['upload']['token'] === $token;
+        return $projects[$project][$this->type]['token'] === $token;
     }
 }
