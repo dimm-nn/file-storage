@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use app\actions\Download;
 use app\actions\Upload;
+use app\middleware\DownloadAuth;
 use app\middleware\UploadAuth;
 
 $container = $app->getContainer();
@@ -19,4 +20,4 @@ $app->group('/{file:\w+}_{hash:\w{1,7}}', function () {
     $this->get('/{translit}.{extension:\w{3,4}}', Download::class);
     $this->get('{params:_[\w\_-]+}.{extension:\w{3,4}}', Download::class);
     $this->get('{params:_[\w\_-]+}/{translit}.{extension:\w{3,4}}', Download::class);
-});
+})->add(new DownloadAuth($container));

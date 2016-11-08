@@ -22,11 +22,6 @@ use Psr\Http\Message\ServerRequestInterface;
 class Download
 {
     /**
-     * @var Project
-     */
-    private $project;
-
-    /**
      * @var Storage
      */
     private $storage;
@@ -38,18 +33,8 @@ class Download
 
     public function __construct(ContainerInterface $container)
     {
-        $this->project = $container->get('project');
         $this->storage = $container->get('storage');
         $this->imageEditor = $container->get('imageEditor');
-    }
-
-    private function availableHash(string $hash, string $fileName, string $params)
-    {
-        $downloadToken = $this->project->getDownloadToken();
-
-        $newHash = FileName::internalHash($fileName, $params, $downloadToken);
-
-        return $newHash === $hash;
     }
 
     /**
@@ -75,10 +60,6 @@ class Download
     )
     {
         $fileName = $fileHash . '.' . $extension;
-
-        if ($this->availableHash($hash, $fileName, $params) === false) {
-            return $response->withStatus(401);
-        }
 
         try {
             /**
