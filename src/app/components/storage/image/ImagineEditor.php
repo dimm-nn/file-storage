@@ -43,7 +43,7 @@ class ImagineEditor implements ImageEditorInterface
         $format = FileName::getExtension($path);
 
         // Thumbnail
-        if (!array_key_exists('w', $params) || !array_key_exists('h', $params)) {
+        if (array_key_exists('w', $params) || array_key_exists('h', $params)) {
             $box = new Box(
                 (int) ($params['w'] ?? $params['h']),
                 (int) ($params['h'] ?? $params['w'])
