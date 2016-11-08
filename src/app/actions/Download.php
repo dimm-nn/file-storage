@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace app\actions;
 
-use app\components\project\Project;
 use app\components\storage\File;
 use app\components\storage\FileException;
-use app\components\storage\FileName;
 use app\components\storage\image\ImageEditorInterface;
 use app\components\storage\Storage;
 use Interop\Container\ContainerInterface;
 use League\Flysystem\Util;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Interfaces\RouteInterface;
 
 /**
  * Class Download
@@ -40,25 +39,25 @@ class Download
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
-     * @param string $fileHash
-     * @param string $hash
-     * @param string $params
-     * @param string $extension
-     * @param string $translit
      * @return ResponseInterface
      * @throws \RuntimeException
      * @throws \InvalidArgumentException
      */
     public function __invoke(
         ServerRequestInterface $request,
-        ResponseInterface $response,
-        string $fileHash,
-        string $hash,
-        string $params,
-        string $extension,
-        string $translit = ''
+        ResponseInterface $response
     )
     {
+        /**
+         * @var RouteInterface $route
+         */
+        $route = $request->getAttribute('route');
+
+        $fileHash = $route->getArgument('file');
+        $params = $route->getArgument('params', '');
+        $extension = $route->getArgument('extension', '');
+        $translit = $route->getArgument('translit', '');
+
         $fileName = $fileHash . '.' . $extension;
 
         try {

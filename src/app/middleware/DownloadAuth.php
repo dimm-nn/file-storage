@@ -31,8 +31,8 @@ class DownloadAuth
 
         $hash = $route->getArgument('hash');
         $file = $route->getArgument('file');
-        $params = $route->getArgument('params');
-        $extension = $route->getArgument('extension');
+        $params = $route->getArgument('params', '');
+        $extension = $route->getArgument('extension', '');
 
         $fileName = $file . '.' . $extension;
 
@@ -47,7 +47,7 @@ class DownloadAuth
         return $next($request, $response);
     }
 
-    private function authenticate(string $hash, string $fileName, string $params)
+    private function authenticate(string $hash, string $fileName, $params = '')
     {
         $downloadToken = $this->project->getDownloadToken();
 
