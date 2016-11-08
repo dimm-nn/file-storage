@@ -4,61 +4,66 @@ declare(strict_types=1);
 
 namespace app\components\project;
 
-use app\components\storage\Storage;
-
 /**
  * Class Project
  * @package app\components
  */
 class Project {
+
+    /**
+     * @var string
+     */
     private $name;
 
-    private $storage;
-
+    /**
+     * @var string
+     */
     private $uploadToken;
 
+    /**
+     * @var string
+     */
     private $downloadToken;
 
     /**
-     * Project constructor.
      * @param string $name
-     * @param Storage $storage
      * @param $uploadToken
      * @param $downloadToken
      */
-    public function __construct(
+    public function configure(
         string $name,
-        Storage $storage,
         string $uploadToken,
         string $downloadToken
     )
     {
         $this->name = $name;
-        $this->storage = $storage;
         $this->uploadToken = $uploadToken;
         $this->downloadToken = $downloadToken;
     }
 
-    public function availableUploadToken($token)
+    /**
+     * @param string $token
+     * @return bool
+     */
+    public function availableUploadToken(string $token)
     {
         return $token === $this->uploadToken;
     }
 
-    public function availableDownloadToken($token)
+    /**
+     * @param string $token
+     * @return bool
+     */
+    public function availableDownloadToken(string $token)
     {
         return $token === $this->downloadToken;
     }
 
+    /**
+     * @return string
+     */
     public function getDownloadToken()
     {
         return $this->downloadToken;
-    }
-
-    /**
-     * @return Storage
-     */
-    public function getStorage()
-    {
-        return $this->storage;
     }
 }

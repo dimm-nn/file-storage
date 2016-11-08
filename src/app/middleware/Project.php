@@ -17,19 +17,27 @@ class Project
      */
     private $container;
 
+    /**
+     * @var \app\components\project\Project
+     */
+    private $project;
+
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
+        $this->project = $container->get('project');
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
+        $project = '';
+
         /**
          * @var \Slim\Route $route
          */
-        $route = $request->getAttribute('route');
-
-        $project = $route->getArgument('project');
+        if ($route = $request->getAttribute('route')) {
+            $project = $route->getArgument('project');
+        }
 
         if (!$project) {
             $queryParams = $request->getQueryParams();
@@ -59,17 +67,10 @@ class Project
 
         $storage->configure($projectSettings['storage']);
 
-        /**
-         * @var Container
-         */
-        $this->container->offsetSet(
-            'project',
-            new \app\components\project\Project(
-                $name,
-                $storage,
-                $projectSettings['upload']['token'],
-                $projectSettings['download']['token']
-            )
+        $this->project->configure(
+            $name,
+            $projectSettings['upload']['token'],
+            $projectSettings['download']['token']
         );
     }
 }

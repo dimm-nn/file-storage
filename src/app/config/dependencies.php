@@ -2,26 +2,38 @@
 
 declare(strict_types=1);
 
-return [
+use app\actions\Download;
+use app\actions\Upload;
+use app\components\storage\image\ImagineEditor;
+use app\components\storage\Storage;
+use Interop\Container\ContainerInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Processor\UidProcessor;
+use Slim\Handlers\Strategies\RequestResponseArgs;
+
+return array(
     'foundHandler' => function () {
-        return new \Slim\Handlers\Strategies\RequestResponseArgs();
+        return new RequestResponseArgs();
     },
     // monolog
-    'logger' => function (\Interop\Container\ContainerInterface $container) {
+    'logger' => function (ContainerInterface $container) {
         $settings = $container->get('settings')['logger'];
         $logger = new Monolog\Logger($settings['name']);
-        $logger->pushProcessor(new Monolog\Processor\UidProcessor());
-        $logger->pushHandler(new Monolog\Handler\StreamHandler($settings['path'], $settings['level']));
+        $logger->pushProcessor(new UidProcessor());
+        $logger->pushHandler(new StreamHandler($settings['path'], $settings['level']));
 
         return $logger;
     },
-    'storage' => function (\Interop\Container\ContainerInterface $container) {
+    'storage' => function (ContainerInterface $container) {
         /** @var \Slim\Collection $settings */
         $settings = $container->get('settings');
 
-        return new \app\components\storage\Storage($settings->get('storage'));
+        return new Storage($settings->get('storage'));
     },
     'imageEditor' => function () {
-        return new \app\components\storage\image\ImagineEditor();
+        return new ImagineEditor();
+    },
+    'project' => function () {
+        return new \app\components\project\Project();
     }
-];
+);

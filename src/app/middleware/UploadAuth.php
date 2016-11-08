@@ -4,22 +4,21 @@ declare(strict_types=1);
 
 namespace app\middleware;
 
-use app\components\project\Project;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Exception\ContainerValueNotFoundException;
 
-class UploadAuthMiddleware
+class UploadAuth
 {
     /**
-     * @var ContainerInterface
+     * @var \app\components\project\Project
      */
-    private $container;
+    private $project;
 
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
+        $this->project = $container->get('project');
     }
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
@@ -44,11 +43,6 @@ class UploadAuthMiddleware
 
     private function authenticate($token)
     {
-        /**
-         * @var Project $project
-         */
-        $project = $this->container->get('project');
-
-        return $project->availableUploadToken($token);
+        return $this->project->availableUploadToken($token);
     }
 }

@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace app\actions;
 
 use app\components\project\Project;
+use app\components\storage\File;
 use app\components\storage\FileException;
 use app\components\storage\FileName;
 use app\components\storage\image\ImageEditorInterface;
+use app\components\storage\Storage;
 use Interop\Container\ContainerInterface;
 use League\Flysystem\Util;
 use Psr\Http\Message\ResponseInterface;
@@ -17,12 +19,17 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class Download
  * @package app\actions
  */
-class Download extends Action
+class Download
 {
     /**
      * @var Project
      */
     private $project;
+
+    /**
+     * @var Storage
+     */
+    private $storage;
 
     /**
      * @var ImageEditorInterface
@@ -31,13 +38,12 @@ class Download extends Action
 
     public function __construct(ContainerInterface $container)
     {
-        parent::__construct($container);
-
         $this->project = $container->get('project');
+        $this->storage = $container->get('storage');
         $this->imageEditor = $container->get('imageEditor');
     }
 
-    private function availableHash($hash, $fileName, $params)
+    private function availableHash(string $hash, string $fileName, string $params)
     {
         $downloadToken = $this->project->getDownloadToken();
 
@@ -49,7 +55,7 @@ class Download extends Action
     /**
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
-     * @param string $file
+     * @param string $fileHash
      * @param string $hash
      * @param string $params
      * @param string $extension
@@ -61,20 +67,23 @@ class Download extends Action
     public function __invoke(
         ServerRequestInterface $request,
         ResponseInterface $response,
-        $file,
-        $hash,
-        $params,
-        $extension,
-        $translit
+        string $fileHash,
+        string $hash,
+        string $params,
+        string $extension,
+        string $translit = ''
     )
     {
-        $fileName = $file . '.' . $extension;
+        $fileName = $fileHash . '.' . $extension;
 
         if ($this->availableHash($hash, $fileName, $params) === false) {
             return $response->withStatus(401);
         }
 
         try {
+            /**
+             * @var File $file
+             */
             $file = $this->storage->getFileByName($fileName);
         } catch (FileException $exception) {
             return $response->withStatus(404);
@@ -99,7 +108,7 @@ class Download extends Action
      * @param string $paramString
      * @return array
      */
-    public static function internalDecodeParams($paramString)
+    public static function internalDecodeParams(string $paramString)
     {
         $result = [];
         if (preg_match_all('/_(?:([a-z]{1,4})\-([a-z\d]+))+/i', $paramString, $matches)) {
