@@ -39,14 +39,28 @@ class Storage
     }
 
     /**
-     * @param string $uploadName
+     * @param string $uploadFilePath
      * @return File
      * @throws FileException
      */
-    public function save($uploadName)
+    public function save($uploadFilePath)
     {
         $file = new File($this->filesystem);
-        $file->upload($uploadName);
+
+        $file->upload($uploadFilePath);
+
+        return $file;
+    }
+
+    /**
+     * @param $fileName
+     * @return File
+     */
+    public function getFileByName($fileName)
+    {
+        $file = new File($this->filesystem);
+
+        $file->load($fileName);
 
         return $file;
     }

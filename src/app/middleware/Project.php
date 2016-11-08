@@ -7,12 +7,13 @@ namespace app\middleware;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Slim\Container;
 use Slim\Exception\ContainerValueNotFoundException;
 
-class Storage
+class Project
 {
     /**
-     * @var ContainerInterface
+     * @var ContainerInterface|Container
      */
     private $container;
 
@@ -28,7 +29,15 @@ class Storage
          */
         $route = $request->getAttribute('route');
 
-        $this->configure($route->getArgument('project'));
+        $project = $route->getArgument('project');
+
+        if (!$project) {
+            $queryParams = $request->getQueryParams();
+
+            $project = $queryParams['domain'];
+        }
+
+        $this->configure($project);
 
         return $next($request, $response);
     }
@@ -49,5 +58,18 @@ class Storage
         $storage = $this->container->get('storage');
 
         $storage->configure($projectSettings['storage']);
+
+        /**
+         * @var Container
+         */
+        $this->container->offsetSet(
+            'project',
+            new \app\components\project\Project(
+                $name,
+                $storage,
+                $projectSettings['upload']['token'],
+                $projectSettings['download']['token']
+            )
+        );
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\middleware;
 
+use app\components\project\Project;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,11 +29,10 @@ class UploadAuthMiddleware
          */
         $route = $request->getAttribute('route');
 
-        $project = $route->getArgument('project');
         $uploadToken = $route->getArgument('token');
 
         try {
-            if (!$this->authenticate($project, $uploadToken)) {
+            if (!$this->authenticate($uploadToken)) {
                 return $response->withStatus(401);
             }
         } catch (ContainerValueNotFoundException $e) {
@@ -42,19 +42,13 @@ class UploadAuthMiddleware
         return $next($request, $response);
     }
 
-    private function authenticate($project, $token)
+    private function authenticate($token)
     {
         /**
-         * @var \Slim\Collection $settings
+         * @var Project $project
          */
-        $settings = $this->container->get('settings');
+        $project = $this->container->get('project');
 
-        $projects = $settings->get('projects');
-
-        if (!isset($projects[$project]['upload']['token'])) {
-            throw new ContainerValueNotFoundException();
-        }
-
-        return $projects[$project]['upload']['token'] === $token;
+        return $project->availableUploadToken($token);
     }
 }

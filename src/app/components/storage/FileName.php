@@ -23,6 +23,24 @@ class FileName
     ];
 
     /**
+     * TODO
+     * Make secure hash based on file path, params and download token
+     *
+     * @param string $filePath
+     * @param array $params
+     * @param string $downloadToken
+     * @return string
+     */
+    public static function internalHash($filePath, $params, $downloadToken)
+    {
+        $hash = hash('crc32', $downloadToken . $filePath . $params . $downloadToken);
+
+        $hash = self::baseConvert($hash, 16, 36);
+
+        return str_pad($hash, 5, '0', STR_PAD_LEFT);
+    }
+
+    /**
      * Generate filename for upload
      * @param string $file
      * @param int $length
@@ -39,6 +57,26 @@ class FileName
             $name = str_pad($name, $length, '0', STR_PAD_LEFT);
         }
 
+        if ($extension = self::getExtension($file)) {
+            $name = $name . '.' . $extension;
+        }
+
+        return $name;
+    }
+
+    /**
+     * @param string $number
+     * @param int $fromBase
+     * @param int $toBase
+     * @return string
+     */
+    private static function baseConvert($number, $fromBase, $toBase)
+    {
+        return gmp_strval(gmp_init($number, $fromBase), $toBase);
+    }
+
+    public static function getExtension($file)
+    {
         static $mimeTypeToExtensionMap;
 
         if (!$mimeTypeToExtensionMap) {
@@ -57,21 +95,6 @@ class FileName
             $extension = self::$webExtensionsMap[$extension];
         }
 
-        if (!empty($extension)) {
-            $name = $name . '.' . $extension;
-        }
-
-        return $name;
-    }
-
-    /**
-     * @param string $number
-     * @param int $fromBase
-     * @param int $toBase
-     * @return string
-     */
-    private static function baseConvert($number, $fromBase, $toBase)
-    {
-        return gmp_strval(gmp_init($number, $fromBase), $toBase);
+        return $extension;
     }
 }

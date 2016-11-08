@@ -16,8 +16,12 @@ return [
         return $logger;
     },
     'storage' => function (\Interop\Container\ContainerInterface $container) {
+        /** @var \Slim\Collection $settings */
         $settings = $container->get('settings');
 
-        return new \app\components\storage\Storage($settings['storage']);
+        return new \app\components\storage\Storage($settings->get('storage'));
+    },
+    'imageEditor' => function () {
+        return new \app\components\storage\image\ImagineEditor();
     }
 ];
