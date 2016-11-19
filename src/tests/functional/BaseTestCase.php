@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\functional;
 
 use Slim\App;
@@ -57,14 +59,13 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
         // Set up a response object
         $response = new Response();
 
-        // Use the application settings
-        $settings = require __DIR__ . '/../config/settings.php';
+        $settings = array_merge(
+            require __DIR__ . '/../config/settings.php', // Slim configuration
+            require __DIR__ . '/../../app/config/dependencies.php' // DIC configuration
+        );
 
         // Instantiate the application
         $app = new App($settings);
-
-        // Set up dependencies
-        require __DIR__ . '/../../app/config/dependencies.php';
 
         // Register middleware
         if ($this->withMiddleware) {
