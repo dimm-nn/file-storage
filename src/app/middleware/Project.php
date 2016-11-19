@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace app\middleware;
 
+use app\exceptions\ProjectNotSetException;
 use Interop\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -39,13 +40,20 @@ class Project
             $project = $route->getArgument('project');
         }
 
-        if (!$project) {
-            $queryParams = $request->getQueryParams();
+        try {
+            if (!$project && ($queryParams = $request->getQueryParams()) && $queryParams['domain']) {
+                $project = $queryParams['domain'];
+            } else {
+                throw new ProjectNotSetException();
+            }
 
-            $project = $queryParams['domain'];
+            $this->configure($project);
+
+        } catch (ProjectNotSetException $e) {
+            return $response->withStatus(400, $e->getMessage());
+        } catch (ContainerValueNotFoundException $e) {
+            return $response->withStatus(400, $e->getMessage());
         }
-
-        $this->configure($project);
 
         return $next($request, $response);
     }
