@@ -33,6 +33,11 @@ class File
         $this->filesystem = $filesystem;
     }
 
+    /**
+     * @param $name
+     * @return $this
+     * @throws FileException
+     */
     public function load($name)
     {
         $this->name = $name;
@@ -40,10 +45,13 @@ class File
             unset($this->name);
             throw new FileException("File with name '{$name}' does not exists");
         }
+
+        return $this;
     }
 
     /**
      * @param string $fileName
+     * @return $this
      * @throws FileException
      */
     public function upload($fileName)
@@ -70,6 +78,7 @@ class File
             throw new FileException($e->getMessage());
         }
 
+        return $this;
     }
 
     public function getContent()

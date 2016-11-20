@@ -45,11 +45,7 @@ class Storage
      */
     public function save($uploadFilePath)
     {
-        $file = new File($this->filesystem);
-
-        $file->upload($uploadFilePath);
-
-        return $file;
+        return (new File($this->filesystem))->upload($uploadFilePath);
     }
 
     /**
@@ -58,10 +54,6 @@ class Storage
      */
     public function getFileByName($fileName)
     {
-        $file = new File($this->filesystem);
-
-        $file->load($fileName);
-
-        return $file;
+        return (new File($this->filesystem))->load($fileName);
     }
 }
