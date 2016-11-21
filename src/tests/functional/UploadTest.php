@@ -78,8 +78,8 @@ class UploadTest extends BaseTestCase
     public function fileProvider()
     {
         return [
-            [['di.png'], 'POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT?domain=example'],
-            [['di.png','8307331.jpe'], 'POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT?domain=example'],
+            [['di.png'], 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT?domain=example-test'],
+            [['di.png','8307331.jpe'], 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT?domain=example-test'],
             [['napoleon for svg 1.svg','8307331.jpe'], 'POST', '/upload/Gmmrz3BMSnQraN3edkH9nBK9867JxWCT?domain=example-test2'],
         ];
     }

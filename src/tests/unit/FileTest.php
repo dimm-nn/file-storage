@@ -16,7 +16,7 @@ class FileTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $adapter = new Local('/storage/example-test');
+        $adapter = new Local('/storage/unit-example-test');
         $this->_filesystem = new Filesystem($adapter);
     }
 
