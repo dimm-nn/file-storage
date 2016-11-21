@@ -33,8 +33,11 @@ class Project
     {
         try {
             $project = '';
-            if (($queryParams = $request->getQueryParams()) && $queryParams['domain']) {
-                $project = $queryParams['domain'];
+
+            $host = $request->getServerParam('HTTP_HOST');
+            if (preg_match('/^(?<subdomain>\w+)\.(?<domain>.+)\.(?<tld>\w+)$/i', $host, $m))
+            {
+                $project = $m['domain'];
             }
 
             if (!$project) {

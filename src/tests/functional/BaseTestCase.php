@@ -27,17 +27,19 @@ class BaseTestCase extends \PHPUnit_Framework_TestCase
     /**
      * Process the application given a request method and URI
      *
+     * @param string $requestHost the request host value (e.g. subdomain.domain.ru)
      * @param string $requestMethod the request method (e.g. GET, POST, etc.)
      * @param string $requestUri the request URI
      * @param array|object|null $requestData the request data
      * @param \Psr\Http\Message\UploadedFileInterface[] $files
      * @return \Slim\Http\Response
      */
-    public function runApp($requestMethod, $requestUri, $requestData = null, $files = null)
+    public function runApp($requestHost, $requestMethod, $requestUri, $requestData = null, $files = null)
     {
         // Create a mock environment for testing with
         $environment = Environment::mock(
             [
+                'HTTP_HOST' => $requestHost,
                 'REQUEST_METHOD' => $requestMethod,
                 'REQUEST_URI' => $requestUri
             ]

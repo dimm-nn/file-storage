@@ -16,31 +16,31 @@ class UploadTest extends BaseTestCase
     /**
      * @dataProvider failAuthenticateProvider
      */
-    public function testFailAuthenticate($method, $url)
+    public function testFailAuthenticate($host, $method, $url)
     {
-        $response = $this->runApp($method, $url);
+        $response = $this->runApp($host, $method, $url);
         $this->assertEquals(401, $response->getStatusCode());
     }
 
     /**
      * @dataProvider failConfigProvider
      */
-    public function testFailConfig($method, $url)
+    public function testFailConfig($host, $method, $url)
     {
-        $response = $this->runApp($method, $url);
+        $response = $this->runApp($host, $method, $url);
         $this->assertEquals(400, $response->getStatusCode());
     }
 
     /**
      * @dataProvider fileProvider
      */
-    public function testFile($input_files, $method, $url)
+    public function testFile($input_files, $host, $method, $url)
     {
         $files = File::moveFilesToTemp($input_files);
         foreach ($files as $key => $name) {
             $files[$key] = new UploadedFile($name);
         }
-        $response = $this->runApp($method, $url, [], $files);
+        $response = $this->runApp($host, $method, $url, [], $files);
         $response->getBody()->rewind();
         $data = json_decode($response->getBody()->getContents(), true);
 
@@ -54,9 +54,9 @@ class UploadTest extends BaseTestCase
     public function failAuthenticateProvider()
     {
         return [
-            ['POST', '/upload/123?domain=example'],
-            ['POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT?domain=example-test2'],
-            ['POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT?domain=example-test2'],
+            ['sub.example.ru', 'POST', '/upload/123'],
+            ['sub.example-test2.ru', 'POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT'],
+            ['sub.example-test2.ru', 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT'],
         ];
     }
 
@@ -66,9 +66,9 @@ class UploadTest extends BaseTestCase
     public function failConfigProvider()
     {
         return [
-            ['POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT'],
-            ['POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT?domain=example2'],
-            ['POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT?domain=example-test3'],
+            ['', 'POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT'],
+            ['sub.example2.ru', 'POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT'],
+            ['sub.example-test3.ru', 'POST', '/upload/N3edBMSnQrakH9nBK98Gmmrz367JxWCT'],
         ];
     }
 
@@ -78,9 +78,9 @@ class UploadTest extends BaseTestCase
     public function fileProvider()
     {
         return [
-            [['di.png'], 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT?domain=example-test'],
-            [['di.png','8307331.jpe'], 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT?domain=example-test'],
-            [['napoleon for svg 1.svg','8307331.jpe'], 'POST', '/upload/Gmmrz3BMSnQraN3edkH9nBK9867JxWCT?domain=example-test2'],
+            [['di.png'], 'sub.example-test.ru', 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT'],
+            [['di.png','8307331.jpe'], 'sub.example-test.ru', 'POST', '/upload/BMSnQraN3edkH9nBK98Gmmrz367JxWCT'],
+            [['napoleon for svg 1.svg','8307331.jpe'], 'sub.example-test2.ru', 'POST', '/upload/Gmmrz3BMSnQraN3edkH9nBK9867JxWCT'],
         ];
     }
 }
