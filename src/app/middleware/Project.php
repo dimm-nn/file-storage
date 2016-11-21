@@ -31,19 +31,13 @@ class Project
 
     public function __invoke(ServerRequestInterface $request, ResponseInterface $response, callable $next)
     {
-        $project = '';
-
-        /**
-         * @var \Slim\Route $route
-         */
-        if ($route = $request->getAttribute('route')) {
-            $project = $route->getArgument('project');
-        }
-
         try {
-            if (!$project && ($queryParams = $request->getQueryParams()) && $queryParams['domain']) {
+            $project = '';
+            if (($queryParams = $request->getQueryParams()) && $queryParams['domain']) {
                 $project = $queryParams['domain'];
-            } else {
+            }
+
+            if (!$project) {
                 throw new ProjectNotSetException();
             }
 

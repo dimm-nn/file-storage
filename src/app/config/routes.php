@@ -9,7 +9,7 @@ use app\middleware\UploadAuth;
 
 $container = $app->getContainer();
 
-$app->post('/upload/{project}/{token}', Upload::class)
+$app->post('/upload/{token}', Upload::class)
     ->add(new UploadAuth($container));
 
 $app->group('/{file:\w+}_{hash:\w{1,7}}', function () {

@@ -14,7 +14,29 @@ return [
                 'download' => [
                     'token' => 'pzScy2w6Kuhz2djvMUg6TeNpBmt9rFvW',
                 ]
-            ]
+            ],
+            'example-test' => [
+                'storage' => [
+                    'path' => 'example_test'
+                ],
+                'upload' => [
+                    'token' => 'BMSnQraN3edkH9nBK98Gmmrz367JxWCT',
+                ],
+                'download' => [
+                    'token' => '6Kuhz2djvMUpzScy2wg6TeNpBmt9rFvW',
+                ]
+            ],
+            'example-test2' => [
+                'storage' => [
+                    'path' => 'example_test2'
+                ],
+                'upload' => [
+                    'token' => 'Gmmrz3BMSnQraN3edkH9nBK9867JxWCT',
+                ],
+                'download' => [
+                    'token' => 'KuhzNpBmt962djvMUpzScy2wg6TerFvW',
+                ]
+            ],
         ],
         // Monolog settings
         'logger' => [
